@@ -50,6 +50,7 @@ export async function POST(req: Request) {
       }
     }),
   )
-  return Response.json({ offset, count: batch.length, total: (urls as string[]).length, map, failed })
+  const quiet = sp.get('quiet') === '1'
+  return Response.json({ offset, count: batch.length, ok: Object.keys(map).length, total: (urls as string[]).length, failed, ...(quiet ? {} : { map }) })
 }
 export const GET = POST
