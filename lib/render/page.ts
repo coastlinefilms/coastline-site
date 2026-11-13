@@ -9,8 +9,15 @@ const PAGES = pages as Record<string, string>
 
 export type Rendered = { status: number; html: string }
 
+/** First-party analytics beacon (see public/cf-a.js). */
+function track(html: string, status = 200) {
+  const tag = `<script defer src="/cf-a.js" data-status="${status}"></script>`
+  const i = html.lastIndexOf('</body>')
+  return i === -1 ? html + tag : html.slice(0, i) + tag + html.slice(i)
+}
+
 function notFound(): Rendered {
-  return { status: 404, html: rewriteAssets(PAGES.__404) }
+  return { status: 404, html: track(rewriteAssets(PAGES.__404), 404) }
 }
 
 /** Render any public path exactly as Webflow served it. */
@@ -21,9 +28,9 @@ export async function renderPath(path: string): Promise<Rendered> {
   if (staticHtml && p !== '__404') {
     if (staticHtml.includes('<!--CMS:')) {
       const [projects, posts] = await Promise.all([listProjects(), listPosts()])
-      return { status: 200, html: rewriteAssets(fillLists(staticHtml, { projects, posts })) }
+      return { status: 200, html: track(rewriteAssets(fillLists(staticHtml, { projects, posts }))) }
     }
-    return { status: 200, html: rewriteAssets(staticHtml) }
+    return { status: 200, html: track(rewriteAssets(staticHtml)) }
   }
 
   const m = p.match(/^\/(projects|blog)\/([^/]+)$/)
@@ -31,10 +38,10 @@ export async function renderPath(path: string): Promise<Rendered> {
     const slug = decodeURIComponent(m[2])
     if (m[1] === 'projects') {
       const proj = await getProject(slug)
-      return proj ? { status: 200, html: rewriteAssets(renderProject(proj)) } : notFound()
+      return proj ? { status: 200, html: track(rewriteAssets(renderProject(proj))) } : notFound()
     }
     const post = await getPost(slug)
-    return post ? { status: 200, html: rewriteAssets(renderPost(post)) } : notFound()
+    return post ? { status: 200, html: track(rewriteAssets(renderPost(post))) } : notFound()
   }
 
   return notFound()
