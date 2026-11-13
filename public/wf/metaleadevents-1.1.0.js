@@ -1,0 +1,6 @@
+(function(){function t(ev,p){if(window.fbq){window.fbq('track',ev,p||{});}}
+var path=(location.pathname||'').replace(/\/+$/,'');
+if(path==='/call-confirmed'){var k='cc_sched_'+(location.search||'x');var seen=false;try{seen=sessionStorage.getItem(k)==='1';}catch(e){}
+if(!seen){t('Schedule',{content_name:'Build Strategy Call booked',content_category:'GHL Calendar'});try{sessionStorage.setItem(k,'1');}catch(e){}}}
+var booked=false;window.addEventListener('message',function(e){if(!e.origin||e.origin.indexOf('calendly.com')===-1)return;var d=e.data;if(!d||typeof d!=='object'||d.event!=='calendly.event_scheduled')return;if(booked)return;booked=true;var p={content_name:'Discovery call booked',content_category:'Calendly'};t('Lead',p);t('Schedule',p);});
+document.addEventListener('click',function(e){var a=e.target&&e.target.closest?e.target.closest('a[href^="mailto:"],a[href^="tel:"]'):null;if(!a)return;var h=a.getAttribute('href')||'';t('Contact',{content_name:h.indexOf('tel:')===0?'Phone click':'Email click'});},true);})();
