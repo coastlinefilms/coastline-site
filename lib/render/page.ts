@@ -16,6 +16,13 @@ function track(html: string, status = 200) {
   return i === -1 ? html + tag : html.slice(0, i) + tag + html.slice(i)
 }
 
+/** Mosaic-style trailing cursor, home page only (see public/cf-cursor.js). */
+function homeCursor(html: string) {
+  const tag = '<script defer src="/cf-cursor.js"></script>'
+  const i = html.lastIndexOf('</body>')
+  return i === -1 ? html + tag : html.slice(0, i) + tag + html.slice(i)
+}
+
 function notFound(): Rendered {
   return { status: 404, html: track(rewriteAssets(PAGES.__404), 404) }
 }
@@ -28,7 +35,8 @@ export async function renderPath(path: string): Promise<Rendered> {
   if (staticHtml && p !== '__404') {
     if (staticHtml.includes('<!--CMS:')) {
       const [projects, posts] = await Promise.all([listProjects(), listPosts()])
-      return { status: 200, html: track(rewriteAssets(fillLists(staticHtml, { projects, posts }))) }
+      const html = track(rewriteAssets(fillLists(staticHtml, { projects, posts })))
+      return { status: 200, html: p === '/' ? homeCursor(html) : html }
     }
     return { status: 200, html: track(rewriteAssets(staticHtml)) }
   }
