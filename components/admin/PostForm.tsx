@@ -1,10 +1,12 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useCallback, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { deleteItem, savePost } from '@/app/admin/actions'
 import { BLOG_CATEGORIES, type Post } from '@/lib/types'
-import { ImageField, RichText, Text, Toast, fromLocalInput, toLocalInput } from './fields'
+import {
+  DateField, EditorHeader, ImageField, MultiRef, NumberField, RichText, Section, Select, SlugField, Switch, Text, Toast, useEditorKeys,
+} from './fields'
 
 export default function PostForm({ post, projects, posts }: {
   post: Partial<Post>
@@ -13,133 +15,109 @@ export default function PostForm({ post, projects, posts }: {
 }) {
   const router = useRouter()
   const [p, setP] = useState<Partial<Post>>(post)
+  const [saved, setSaved] = useState(JSON.stringify(post))
   const [toast, setToast] = useState<{ msg: string; err?: boolean }>({ msg: '' })
   const [pending, start] = useTransition()
-  const wasLive = post.status === 'published'
+  const status = (p.status ?? 'draft') as 'draft' | 'published'
+  const dirty = JSON.stringify(p) !== saved
   const set = <K extends keyof Post>(k: K, v: Post[K] | null) => setP((s) => ({ ...s, [k]: v }))
 
-  function flash(msg: string, err = false) {
+  const flash = (msg: string, err = false) => {
     setToast({ msg, err })
-    setTimeout(() => setToast({ msg: '' }), 3500)
+    setTimeout(() => setToast({ msg: '' }), 3200)
   }
 
-  function save(status?: 'draft' | 'published') {
+  const save = useCallback((next: 'draft' | 'published' = status) => {
     start(async () => {
-      const res = await savePost(p.id ?? null, { ...p, status: status ?? p.status ?? 'draft' })
+      const res = await savePost(p.id ?? null, { ...p, status: next })
       if (!res.ok) return flash(res.error, true)
-      setP((s) => ({ ...s, status: status ?? s.status, slug: res.slug }))
-      flash(status === 'published' ? 'Published. Live on the site within a minute.' : 'Saved')
+      const updated = { ...p, id: res.id, status: next, slug: res.slug }
+      setP(updated)
+      setSaved(JSON.stringify(updated))
+      flash(next === 'published' ? 'Published. Live on coastlinefilms.ca within a minute.' : status === 'published' ? 'Unpublished' : 'Draft saved')
       if (!p.id) router.replace(`/admin/journal/${res.id}`)
       else router.refresh()
     })
-  }
+  }, [p, status, router])
+
+  useEditorKeys(dirty, () => save())
 
   return (
-    <>
-      <div className="row" style={{ marginBottom: 20 }}>
-        <h1 style={{ margin: 0 }}>{p.id ? 'Edit post' : 'New post'}</h1>
-        <span className={`pill ${p.status === 'published' ? 'pub' : ''}`}>{p.status}</span>
-        <span className="sp" />
-        {p.id && <a className="btn" href={`/admin/preview/post/${p.id}`} target="_blank" rel="noopener">Preview ↗</a>}
-      </div>
+    <div className="wf-editor">
+      <EditorHeader
+        back="/admin/journal"
+        title={p.name || 'New Blog Post'}
+        status={status}
+        dirty={dirty}
+        previewHref={p.id ? `/admin/preview/post/${p.id}` : undefined}
+        pending={pending}
+        primary={{ label: status === 'published' ? 'Publish changes' : 'Publish now', onClick: () => save('published') }}
+        menu={[
+          { label: 'Save as draft', onClick: () => save('draft'), hidden: status === 'published' },
+          { label: 'View live post', onClick: () => window.open(`/blog/${p.slug}`, '_blank'), hidden: status !== 'published' },
+          { label: 'Unpublish', onClick: () => confirm('Take this post off the site? Its URL will return a 404.') && save('draft'), hidden: status !== 'published' },
+          { label: 'Delete item', danger: true, hidden: !p.id, onClick: () => confirm('Delete this post permanently? This cannot be undone.') && start(async () => { await deleteItem('post', p.id!) }) },
+        ]}
+      />
+      <div className="wf-editor-body">
+        <div className="wf-form">
+          <Section title="Basic info" collapsible={false}>
+            <Text label="Name" required value={p.name} onChange={(v) => set('name', v)} />
+            <SlugField value={p.slug} onChange={(v) => set('slug', v)} prefix="blog" wasLive={post.status === 'published'} original={post.slug} />
+          </Section>
 
-      <div className="grid">
-        <div>
-          <div className="card">
-            <h2>Post</h2>
-            <Text label="Title" value={p.name} onChange={(v) => set('name', v)} />
-            <Text label="Excerpt" multiline value={p.excerpt} onChange={(v) => set('excerpt', v)} hint="1 to 2 sentences. Shows under the title, on Journal cards and in social shares." />
-            <ImageField label="Hero image" value={p.hero_image ?? null} onChange={(v) => set('hero_image', v)} hint="Also used as the social share image." />
-          </div>
+          <Section title="Hero & Metadata" desc="Top-of-post essentials: hero image, category, date, byline, excerpt">
+            <ImageField label="Hero Image" value={p.hero_image ?? null} onChange={(v) => set('hero_image', v)} help="Also used as the social share image." alt={false} />
+            <Text label="Excerpt" multiline help="1 to 2 sentence summary for cards and previews" value={p.excerpt} onChange={(v) => set('excerpt', v)} />
+            <Select
+              label="Category"
+              help="Topic cluster for SEO - keep posts aligned to one of these verticals"
+              value={p.category}
+              onChange={(v) => set('category', v)}
+              options={BLOG_CATEGORIES.map((c) => ({ value: c, label: c }))}
+            />
+            <DateField label="Publish Date" value={p.publish_date} onChange={(v) => set('publish_date', v)} />
+            <Text label="Author" help="Who wrote the post. Defaults to Coastline Films." value={p.author} onChange={(v) => set('author', v)} />
+            <NumberField label="Reading Time Minutes" help="Estimated minutes to read - integer only" value={p.reading_time_minutes} onChange={(v) => set('reading_time_minutes', v)} />
+            <Switch label="Featured on the Journal" help="Shows this post in the Featured slot at the top of /journal. Only one post can be featured." checked={!!p.journal_featured} onChange={(v) => set('journal_featured', v)} />
+          </Section>
 
-          <div className="card">
-            <h2>Article</h2>
-            <RichText label="Part 1: opening (first 2 paragraphs)" value={p.body_part_1} onChange={(v) => set('body_part_1', v)} />
-            <ImageField label="Section image 1 (after part 1)" value={p.section_image_1 ?? null} onChange={(v) => set('section_image_1', v)} />
-            <Text label="Section image 1 caption" value={p.section_image_1_caption} onChange={(v) => set('section_image_1_caption', v)} />
-            <RichText label="Part 2: middle" value={p.body_part_2} onChange={(v) => set('body_part_2', v)} />
-            <ImageField label="Section image 2 (after part 2)" value={p.section_image_2 ?? null} onChange={(v) => set('section_image_2', v)} />
-            <Text label="Section image 2 caption" value={p.section_image_2_caption} onChange={(v) => set('section_image_2_caption', v)} />
-            <RichText label="Part 3: closing (FAQ, CTA)" value={p.body_part_3} onChange={(v) => set('body_part_3', v)} />
-          </div>
+          <Section title="Section 1 (Opening + Image 1)" desc="First 2 paragraphs of the article, followed by the first inline image and optional caption">
+            <RichText label="Post Body Part 1" help="First section of the article - the opening 2 paragraphs. Image 1 appears after this." value={p.body_part_1} onChange={(v) => set('body_part_1', v)} />
+            <ImageField label="Section Image 1" help="First inline image break - renders after Post Body Part 1." value={p.section_image_1 ?? null} onChange={(v) => set('section_image_1', v)} />
+            <Text label="Section Image 1 Caption" help="Optional caption for Section Image 1. Leave blank for no caption." value={p.section_image_1_caption} onChange={(v) => set('section_image_1_caption', v)} />
+          </Section>
+
+          <Section title="Section 2 (Middle + Image 2)" desc="Middle section of the article, followed by the second inline image and optional caption">
+            <RichText label="Post Body Part 2" help="Middle section of the article. Image 2 appears after this." value={p.body_part_2} onChange={(v) => set('body_part_2', v)} />
+            <ImageField label="Section Image 2" help="Second inline image break - renders after Post Body Part 2." value={p.section_image_2 ?? null} onChange={(v) => set('section_image_2', v)} />
+            <Text label="Section Image 2 Caption" help="Optional caption for Section Image 2. Leave blank for no caption." value={p.section_image_2_caption} onChange={(v) => set('section_image_2_caption', v)} />
+          </Section>
+
+          <Section title="Section 3 (Closing)" desc="Final section of the article - FAQ, CTA, closing paragraph">
+            <RichText label="Post Body Part 3" help="Closing section of the article." value={p.body_part_3} onChange={(v) => set('body_part_3', v)} />
+          </Section>
+
+          <Section title="SEO" desc="Search engine optimization fields - title, description, keyword, social share image and its caption">
+            <Text label="SEO Title" help="Under 60 characters, primary keyword first" max={60} value={p.seo_title} onChange={(v) => set('seo_title', v)} />
+            <Text label="Meta Description" help="Under 155 characters" max={155} multiline value={p.meta_description} onChange={(v) => set('meta_description', v)} />
+            <Text label="Target Keyword" value={p.target_keyword} onChange={(v) => set('target_keyword', v)} />
+            <ImageField label="OG Image" help="Social share image - 1200x630. Only used when there is no Hero Image." value={p.og_image ?? null} onChange={(v) => set('og_image', v)} alt={false} />
+            <Text label="OG Image Caption" help="Optional caption for the OG Image. Leave blank for no caption." value={p.og_image_caption} onChange={(v) => set('og_image_caption', v)} />
+          </Section>
+
+          <Section title="Related Content" desc="Link this post to a project or to other posts for internal linking">
+            <Select label="Related Project" value={p.related_project_id} onChange={(v) => set('related_project_id', v)} options={projects.map((o) => ({ value: o.id, label: o.name }))} />
+            <MultiRef label="Related Posts" help="Link 2-3 related posts for internal linking" value={p.related_post_ids ?? []} options={posts} onChange={(v) => set('related_post_ids', v)} />
+          </Section>
+
+          <Section title="Legacy / Internal" desc="Vimeo ID and internal review notes - not shown on live page" defaultOpen={false}>
+            <Text label="Vimeo ID" help="Optional embedded video" value={p.vimeo_id} onChange={(v) => set('vimeo_id', v)} />
+            <Text label="Review Notes" multiline help="Internal: what Jacob needs to add before publishing. Do not show on the page." value={p.review_notes} onChange={(v) => set('review_notes', v)} />
+          </Section>
         </div>
-
-        <div>
-          <div className="card">
-            <h2>Details</h2>
-            <label>
-              <span>Category</span>
-              <select value={p.category ?? ''} onChange={(e) => set('category', e.target.value || null)}>
-                <option value="">None</option>
-                {BLOG_CATEGORIES.map((c) => <option key={c}>{c}</option>)}
-              </select>
-            </label>
-            <label>
-              <span>Publish date</span>
-              <input type="datetime-local" value={toLocalInput(p.publish_date)} onChange={(e) => set('publish_date', fromLocalInput(e.target.value))} />
-            </label>
-            <Text label="Author" value={p.author} onChange={(v) => set('author', v)} />
-            <label>
-              <span>Reading time (minutes)</span>
-              <input type="number" min={1} value={p.reading_time_minutes ?? ''} onChange={(e) => set('reading_time_minutes', e.target.value ? Number(e.target.value) : null)} />
-            </label>
-            <label className="check">
-              <input type="checkbox" checked={!!p.journal_featured} onChange={(e) => set('journal_featured', e.target.checked)} />
-              Feature at the top of the Journal
-            </label>
-          </div>
-
-          <div className="card">
-            <h2>SEO</h2>
-            <Text label="URL slug" value={p.slug} onChange={(v) => set('slug', v)} placeholder="auto from title" hint={`coastlinefilms.ca/blog/${p.slug || '…'}`} />
-            {wasLive && p.slug !== post.slug && <p className="warn">Changing the URL of a live post breaks links to it and loses its Google ranking.</p>}
-            <Text label="SEO title" value={p.seo_title} onChange={(v) => set('seo_title', v)} max={60} hint="Primary keyword first. Defaults to the title." />
-            <Text label="Meta description" multiline value={p.meta_description} onChange={(v) => set('meta_description', v)} max={155} />
-            <Text label="Target keyword" value={p.target_keyword} onChange={(v) => set('target_keyword', v)} />
-          </div>
-
-          <div className="card">
-            <h2>Related</h2>
-            <label>
-              <span>Related project</span>
-              <select value={p.related_project_id ?? ''} onChange={(e) => set('related_project_id', e.target.value || null)}>
-                <option value="">None</option>
-                {projects.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
-              </select>
-            </label>
-            <label>
-              <span>Related posts</span>
-              <select multiple style={{ minHeight: 120 }} value={p.related_post_ids ?? []} onChange={(e) => set('related_post_ids', Array.from(e.target.selectedOptions).map((o) => o.value))}>
-                {posts.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
-              </select>
-            </label>
-          </div>
-
-          <div className="card">
-            <h2>Internal notes</h2>
-            <Text label="Review notes (never shown on the site)" multiline value={p.review_notes} onChange={(v) => set('review_notes', v)} />
-          </div>
-        </div>
-      </div>
-
-      <div className="savebar">
-        <button className="btn" disabled={pending} onClick={() => save()}>{pending ? 'Saving…' : 'Save'}</button>
-        {p.status !== 'published' ? (
-          <button className="btn primary" disabled={pending} onClick={() => save('published')}>Publish</button>
-        ) : (
-          <>
-            <button className="btn primary" disabled={pending} onClick={() => save('published')}>Update live post</button>
-            <button className="btn" disabled={pending} onClick={() => confirm('Take this post off the site? Its URL will return a 404.') && save('draft')}>Unpublish</button>
-          </>
-        )}
-        <span className="sp" />
-        {p.id && (
-          <button className="btn danger" disabled={pending} onClick={() => confirm('Delete this post permanently? This cannot be undone.') && start(async () => { await deleteItem('post', p.id!) })}>
-            Delete
-          </button>
-        )}
       </div>
       <Toast msg={toast.msg} err={toast.err} />
-    </>
+    </div>
   )
 }

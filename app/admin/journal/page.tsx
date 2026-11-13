@@ -1,41 +1,24 @@
-import Link from 'next/link'
 import { requireEditor } from '@/lib/admin'
-import { formatDate } from '@/lib/render/util'
+import { fmtDate } from '@/lib/admin-format'
+import CollectionTable, { type Row } from '@/components/admin/CollectionTable'
 import type { Post } from '@/lib/types'
 
-export default async function JournalList() {
+export default async function BlogPostsTable() {
   const { sb } = await requireEditor()
   const { data } = await sb
     .from('site_blog_posts')
-    .select('id, slug, name, status, category, publish_date, hero_image, journal_featured, updated_at')
-    .order('publish_date', { ascending: false, nullsFirst: true })
-  const posts = (data ?? []) as Pick<Post, 'id' | 'slug' | 'name' | 'status' | 'category' | 'publish_date' | 'hero_image' | 'journal_featured' | 'updated_at'>[]
+    .select('id, slug, name, status, category, publish_date, hero_image, journal_featured, published_at, created_at, updated_at')
+  const rows: Row[] = ((data ?? []) as Post[]).map((p) => ({
+    id: p.id, name: p.name, slug: p.slug, status: p.status, published_at: p.published_at,
+    created_at: p.created_at, updated_at: p.updated_at, thumb: p.hero_image?.url,
+    extra: { category: p.category ?? '', publish_date: p.publish_date ? fmtDate(p.publish_date) : '', featured: p.journal_featured ? 'Featured' : '' },
+  }))
   return (
-    <main className="adm-wrap">
-      <div className="row" style={{ marginBottom: 24 }}>
-        <h1 style={{ margin: 0 }}>Journal</h1>
-        <span className="sp" />
-        <Link className="btn primary" href="/admin/journal/new">New post</Link>
-      </div>
-      <table>
-        <thead><tr><th /><th>Title</th><th>Category</th><th>Publish date</th><th>Status</th><th /></tr></thead>
-        <tbody>
-          {posts.map((p) => (
-            <tr key={p.id}>
-              <td>{p.hero_image?.url ? <img className="thumb" src={p.hero_image.url} alt="" /> : <span className="thumb" />}</td>
-              <td>
-                <Link href={`/admin/journal/${p.id}`}>{p.name}</Link>
-                {p.journal_featured && <span className="pill" style={{ marginLeft: 8 }}>Featured</span>}
-                <div className="note">/blog/{p.slug}</div>
-              </td>
-              <td className="note">{p.category}</td>
-              <td className="note">{formatDate(p.publish_date)}</td>
-              <td><span className={`pill ${p.status === 'published' ? 'pub' : ''}`}>{p.status}</span></td>
-              <td>{p.status === 'published' && <a className="note" href={`/blog/${p.slug}`} target="_blank" rel="noopener">View ↗</a>}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </main>
+    <CollectionTable
+      title="Blog Posts"
+      base="/admin/journal"
+      rows={rows}
+      extraCols={[{ key: 'category', label: 'Category' }, { key: 'publish_date', label: 'Publish Date' }]}
+    />
   )
 }

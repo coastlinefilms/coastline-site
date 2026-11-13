@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useCallback, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { deleteItem, saveProject } from '@/app/admin/actions'
 import { PROJECT_TYPES, type Img, type Project } from '@/lib/types'
-import { ImageField, Text, Toast } from './fields'
+import {
+  EditorHeader, ImageField, NumberField, Section, Select, SlugField, Switch, Text, Toast, useEditorKeys,
+} from './fields'
 
-const GALLERY_LABELS = ['Gallery 1 (large)', 'Gallery 2', 'Gallery 3', 'Gallery 4', 'Gallery 5', 'Gallery 6']
 const CREDITS = [
   ['director', 'Director'], ['dop', 'DOP'], ['producer', 'Producer'], ['edit', 'Edit'], ['colour', 'Colour'], ['sound', 'Sound'],
 ] as const
@@ -14,114 +15,101 @@ const CREDITS = [
 export default function ProjectForm({ project }: { project: Partial<Project> }) {
   const router = useRouter()
   const [p, setP] = useState<Partial<Project>>(project)
+  const [saved, setSaved] = useState(JSON.stringify(project))
   const [toast, setToast] = useState<{ msg: string; err?: boolean }>({ msg: '' })
   const [pending, start] = useTransition()
-  const wasLive = project.status === 'published'
+  const status = (p.status ?? 'draft') as 'draft' | 'published'
+  const dirty = JSON.stringify(p) !== saved
   const set = <K extends keyof Project>(k: K, v: Project[K] | null) => setP((s) => ({ ...s, [k]: v }))
   const gallery: Img[] = Array.from({ length: 6 }, (_, i) => p.gallery?.[i] ?? null)
 
-  function flash(msg: string, err = false) {
+  const flash = (msg: string, err = false) => {
     setToast({ msg, err })
-    setTimeout(() => setToast({ msg: '' }), 3500)
+    setTimeout(() => setToast({ msg: '' }), 3200)
   }
 
-  function save(status?: 'draft' | 'published') {
+  const save = useCallback((next: 'draft' | 'published' = status) => {
     start(async () => {
-      const res = await saveProject(p.id ?? null, { ...p, gallery, status: status ?? p.status ?? 'draft' })
+      const res = await saveProject(p.id ?? null, { ...p, gallery, status: next })
       if (!res.ok) return flash(res.error, true)
-      setP((s) => ({ ...s, status: status ?? s.status, slug: res.slug }))
-      flash(status === 'published' ? 'Published. Live on the site within a minute.' : 'Saved')
+      const updated = { ...p, gallery, id: res.id, status: next, slug: res.slug }
+      setP(updated)
+      setSaved(JSON.stringify(updated))
+      flash(next === 'published' ? 'Published. Live on coastlinefilms.ca within a minute.' : status === 'published' ? 'Unpublished' : 'Draft saved')
       if (!p.id) router.replace(`/admin/projects/${res.id}`)
       else router.refresh()
     })
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [p, status, router])
+
+  useEditorKeys(dirty, () => save())
 
   return (
-    <>
-      <div className="row" style={{ marginBottom: 20 }}>
-        <h1 style={{ margin: 0 }}>{p.id ? 'Edit project' : 'New project'}</h1>
-        <span className={`pill ${p.status === 'published' ? 'pub' : ''}`}>{p.status}</span>
-        <span className="sp" />
-        {p.id && <a className="btn" href={`/admin/preview/project/${p.id}`} target="_blank" rel="noopener">Preview ↗</a>}
-      </div>
+    <div className="wf-editor">
+      <EditorHeader
+        back="/admin/projects"
+        title={p.name || 'New Project'}
+        status={status}
+        dirty={dirty}
+        previewHref={p.id ? `/admin/preview/project/${p.id}` : undefined}
+        pending={pending}
+        primary={{ label: status === 'published' ? 'Publish changes' : 'Publish now', onClick: () => save('published') }}
+        menu={[
+          { label: 'Save as draft', onClick: () => save('draft'), hidden: status === 'published' },
+          { label: 'View live project', onClick: () => window.open(`/projects/${p.slug}`, '_blank'), hidden: status !== 'published' },
+          { label: 'Unpublish', onClick: () => confirm('Take this project off the site? Its URL will return a 404.') && save('draft'), hidden: status !== 'published' },
+          { label: 'Delete item', danger: true, hidden: !p.id, onClick: () => confirm('Delete this project permanently? This cannot be undone.') && start(async () => { await deleteItem('project', p.id!) }) },
+        ]}
+      />
+      <div className="wf-editor-body">
+        <div className="wf-form">
+          <Section title="Basic info" collapsible={false}>
+            <Text label="Name" required value={p.name} onChange={(v) => set('name', v)} />
+            <SlugField value={p.slug} onChange={(v) => set('slug', v)} prefix="projects" wasLive={project.status === 'published'} original={project.slug} />
+          </Section>
 
-      <div className="grid">
-        <div>
-          <div className="card">
-            <h2>Project</h2>
-            <Text label="Project name" value={p.name} onChange={(v) => set('name', v)} />
-            <Text label="Client" value={p.client} onChange={(v) => set('client', v)} hint="Shows above the title and on Work cards." />
-            <Text label="Project brief" multiline value={p.brief} onChange={(v) => set('brief', v)} />
-          </div>
-          <div className="card">
-            <h2>Images</h2>
-            <ImageField label="Header (top of the project page)" value={p.header ?? null} onChange={(v) => set('header', v)} />
-            <ImageField label="Thumbnail (Work grid and home page cards)" value={p.thumbnail ?? null} onChange={(v) => set('thumbnail', v)} />
-            <ImageField label="Client logo" value={p.logo ?? null} onChange={(v) => set('logo', v)} />
+          <Section title="Project Header" desc="Top of the project page: client, logo and header image">
+            <Text label="Client" help="Shows above the project name and on Work cards" value={p.client} onChange={(v) => set('client', v)} />
+            <ImageField label="Logo" value={p.logo ?? null} onChange={(v) => set('logo', v)} />
+            <ImageField label="Header" value={p.header ?? null} onChange={(v) => set('header', v)} />
+          </Section>
+
+          <Section title="Work Card" desc="How the project appears in the Work grid and on the home page">
+            <ImageField label="Thumbnail" value={p.thumbnail ?? null} onChange={(v) => set('thumbnail', v)} />
+            <Text label="Hover Video Url" help="Short silent MP4 loop that plays when the card is hovered" value={p.hover_video_url} onChange={(v) => set('hover_video_url', v)} />
+            <Switch label="Featured" help="Show this project in the home page work section" checked={!!p.featured} onChange={(v) => set('featured', v)} />
+            <NumberField label="Sort Order" help="Order on the home page, lowest first" value={p.sort_order} onChange={(v) => set('sort_order', v)} />
+          </Section>
+
+          <Section title="Project Details" desc="The brief, project type and outcome">
+            <Select label="Project Type" value={p.project_type} onChange={(v) => set('project_type', v)} options={PROJECT_TYPES.map((t) => ({ value: t, label: t }))} />
+            <Text label="Brief" multiline value={p.brief} onChange={(v) => set('brief', v)} />
+            <Text label="Outcome" multiline value={p.outcome} onChange={(v) => set('outcome', v)} />
+          </Section>
+
+          <Section title="Videos" desc="Vimeo IDs: the number at the end of the Vimeo link">
+            <Text label="Hero Video" placeholder="e.g. 1191656304" value={p.hero_video} onChange={(v) => set('hero_video', v)} />
+            <Text label="Video 2" value={p.video_2} onChange={(v) => set('video_2', v)} />
+            <Text label="Video 3" value={p.video_3} onChange={(v) => set('video_3', v)} />
+          </Section>
+
+          <Section title="Gallery" desc="Six stills: one large, two small, then a row of three">
             {gallery.map((g, i) => (
-              <ImageField key={i} label={GALLERY_LABELS[i]} value={g} onChange={(v) => set('gallery', gallery.map((x, j) => (j === i ? v : x)))} />
+              <ImageField key={i} label={`Gallery ${i + 1}`} value={g} onChange={(v) => set('gallery', gallery.map((x, j) => (j === i ? v : x)))} />
             ))}
-          </div>
-          <div className="card">
-            <h2>Video</h2>
-            <Text label="Hero video (Vimeo ID)" value={p.hero_video} onChange={(v) => set('hero_video', v)} placeholder="e.g. 1191656304" hint="The number at the end of the Vimeo link." />
-            <Text label="Video 2 (Vimeo ID)" value={p.video_2} onChange={(v) => set('video_2', v)} />
-            <Text label="Video 3 (Vimeo ID)" value={p.video_3} onChange={(v) => set('video_3', v)} />
-            <Text label="Hover video URL (MP4)" value={p.hover_video_url} onChange={(v) => set('hover_video_url', v)} hint="Short silent loop that plays when someone hovers the card." />
-          </div>
-        </div>
+          </Section>
 
-        <div>
-          <div className="card">
-            <h2>Placement</h2>
-            <label>
-              <span>Project type</span>
-              <select value={p.project_type ?? ''} onChange={(e) => set('project_type', e.target.value || null)}>
-                <option value="">None</option>
-                {PROJECT_TYPES.map((c) => <option key={c}>{c}</option>)}
-              </select>
-            </label>
-            <label className="check">
-              <input type="checkbox" checked={!!p.featured} onChange={(e) => set('featured', e.target.checked)} />
-              Feature on the home page
-            </label>
-            <label>
-              <span>Sort order (home page)</span>
-              <input type="number" min={0} value={p.sort_order ?? ''} onChange={(e) => set('sort_order', e.target.value ? Number(e.target.value) : null)} />
-            </label>
-          </div>
-          <div className="card">
-            <h2>Credits</h2>
+          <Section title="Credits" desc="Empty credits are hidden on the page">
             {CREDITS.map(([k, l]) => <Text key={k} label={l} value={p[k] as string | null} onChange={(v) => set(k, v)} />)}
-          </div>
-          <div className="card">
-            <h2>SEO</h2>
-            <Text label="URL slug" value={p.slug} onChange={(v) => set('slug', v)} placeholder="auto from name" hint={`coastlinefilms.ca/projects/${p.slug || '…'}`} />
-            {wasLive && p.slug !== project.slug && <p className="warn">Changing the URL of a live project breaks links to it and loses its Google ranking.</p>}
-            <Text label="SEO title" value={p.seo_title} onChange={(v) => set('seo_title', v)} max={60} hint="End with | Coastline Films." />
-            <Text label="Meta description" multiline value={p.meta_description} onChange={(v) => set('meta_description', v)} max={155} />
-          </div>
-        </div>
-      </div>
+          </Section>
 
-      <div className="savebar">
-        <button className="btn" disabled={pending} onClick={() => save()}>{pending ? 'Saving…' : 'Save'}</button>
-        {p.status !== 'published' ? (
-          <button className="btn primary" disabled={pending} onClick={() => save('published')}>Publish</button>
-        ) : (
-          <>
-            <button className="btn primary" disabled={pending} onClick={() => save('published')}>Update live project</button>
-            <button className="btn" disabled={pending} onClick={() => confirm('Take this project off the site? Its URL will return a 404.') && save('draft')}>Unpublish</button>
-          </>
-        )}
-        <span className="sp" />
-        {p.id && (
-          <button className="btn danger" disabled={pending} onClick={() => confirm('Delete this project permanently? This cannot be undone.') && start(async () => { await deleteItem('project', p.id!) })}>
-            Delete
-          </button>
-        )}
+          <Section title="SEO" desc="Search title and description for this project page">
+            <Text label="SEO Title" help="Page title for Google and Bing. Aim for under 60 characters, end with | Coastline Films." max={60} value={p.seo_title} onChange={(v) => set('seo_title', v)} />
+            <Text label="Meta Description" help="Search snippet. Aim for 120 to 155 characters." max={155} multiline value={p.meta_description} onChange={(v) => set('meta_description', v)} />
+          </Section>
+        </div>
       </div>
       <Toast msg={toast.msg} err={toast.err} />
-    </>
+    </div>
   )
 }

@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { requireEditor } from '@/lib/admin'
+import ItemList from '@/components/admin/ItemList'
 import ProjectForm from '@/components/admin/ProjectForm'
 import type { Project } from '@/lib/types'
 
@@ -12,9 +13,13 @@ export default async function EditProject({ params }: { params: Promise<{ id: st
     if (!data) notFound()
     project = data as Project
   }
+  const { data: list } = await sb.from('site_projects').select('id, name, status').order('created_at', { ascending: false })
   return (
-    <main className="adm-wrap">
-      <ProjectForm project={project} />
-    </main>
+    <div className="wf-main">
+      <div className="wf-itemview">
+        <ItemList title="Projects" base="/admin/projects" items={(list ?? []) as { id: string; name: string; status: string }[]} activeId={project.id} />
+        <ProjectForm key={project.id ?? 'new'} project={project} />
+      </div>
+    </div>
   )
 }

@@ -25,10 +25,10 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={submit}>
-      <label><span>Email</span><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required /></label>
-      <label><span>Password</span><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required /></label>
-      {err && <p className="warn">{err}</p>}
-      <button className="btn primary" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
+      <div className="wf-field"><span className="lbl">Email</span><input className="wf-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required /></div>
+      <div className="wf-field"><span className="lbl">Password</span><input className="wf-input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required /></div>
+      {err && <div className="wf-warn">{err}</div>}
+      <button className="wf-btn blue" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
     </form>
   )
 }
