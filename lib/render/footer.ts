@@ -9,9 +9,9 @@ const NT = ' target="_blank" rel="noopener"'
 const LOGO = 'https://cdn.prod.website-files.com/69ecc5fb6fc18880aa9fc6c6/69fe6c7428307ab091c9a49f_Coastline%20Films%20copy.png'
 
 const GROUPS: [string, [string, string][]][] = [
-  ['Studio', [['Work', '/work'], ['About', '/about'], ['Journal', '/journal'], ['Contact', '/contact']]],
-  ['Services', [['Video Production', '/video-production'], ['Monthly Content Retainer', '/monthly-content-retainer'], ['Cost Calculator', '/video-production-cost-calculator']]],
-  ['Locations', [['Squamish &amp; the Sea to Sky', '/squamish-videographer'], ['Muskoka &amp; Toronto', '/muskoka-toronto-videographer']]],
+  ['Studio', [['Work', '/work'], ['About', '/about'], ['Field Notes', '/journal'], ['Contact', '/contact']]],
+  ['Services', [['Video Production', '/video-production'], ['Monthly Content Retainer', '/monthly-content-retainer'], ['Growth Partner', '/contact'], ['Cost Calculator', '/video-production-cost-calculator']]],
+  ['Locations', [['Squamish &amp; the Sea to Sky', '/squamish-videographer'], ['Vancouver', '/squamish-videographer'], ['Muskoka', '/muskoka-toronto-videographer'], ['Toronto', '/muskoka-toronto-videographer']]],
   ['Clients', [['Reviews', 'https://share.google/Eaw3GzggvqPVFXB1r'], ['Client Portal', 'https://portal.coastlinefilms.ca/login'], ['Book a discovery call', '/contact']]],
 ]
 
@@ -57,7 +57,6 @@ const STYLE = `<style>
   .footer-006-cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; width: 100%; margin-top: 96px; text-align: center; }
   .footer-006-col-h { margin: 0 0 20px; font-family: 'Neue Montreal', sans-serif; font-size: 11px; font-weight: 500; line-height: 1.4; letter-spacing: 0.14em; text-transform: uppercase; color: #7A736A; }
   .footer-006-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 14px; }
-  .f-tilt { display: inline-block; transform-style: preserve-3d; will-change: transform; padding: 18px 14px; margin: -18px -14px; }
   .footer-006-col a { font-family: 'Neue Montreal', sans-serif; font-size: 18px; font-weight: 500; line-height: 1.35; letter-spacing: -0.01em; color: rgba(228,221,203,0.55); text-decoration: none; transition: color 0.4s ease; }
   .footer-006-col a:hover { color: #E4DDCB; }
 
@@ -95,12 +94,12 @@ const SOCIALS = [
   ICON('spot', 'https://open.spotify.com/user/21pwagjllaopjreittv2q7mxy?si=6129e4e525c24eab', 'Spotify', '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm4.6 14.4c-.2.3-.6.4-.9.2-2.5-1.5-5.6-1.9-9.3-1-.4.1-.7-.1-.8-.5-.1-.4.1-.7.5-.8 4-.9 7.5-.5 10.3 1.2.3.2.4.6.2.9zm1.2-2.7c-.2.4-.7.5-1.1.3-2.8-1.7-7.1-2.2-10.4-1.2-.4.1-.9-.1-1-.5-.1-.4.1-.9.5-1 3.8-1.1 8.5-.6 11.7 1.4.4.2.5.7.3 1zm.1-2.8C14.5 8.9 9 8.7 5.8 9.7c-.5.2-1.1-.1-1.2-.6-.2-.5.1-1.1.6-1.2 3.7-1.1 9.7-.9 13.5 1.4.5.3.6.9.4 1.4-.3.4-1 .6-1.4.2z"/></svg>'),
   ICON('fb', 'https://www.facebook.com/CoastlineFilms.ca', 'Facebook', '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12c0-5.5-4.5-10-10-10S2 6.5 2 12c0 5 3.7 9.1 8.4 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.3v7C18.3 21.1 22 17 22 12z"/></svg>'),
   ICON('li', 'https://www.linkedin.com/company/coastline-films', 'LinkedIn', '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.3 6.5a1.78 1.78 0 01-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0013 14.19a.66.66 0 000 .14V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.36.86 3.36 3.66z"/></svg>'),
-  `<div class="f-froth-tilt" data-f-tilt-froth><a href="https://frothing.ca" class="footer-006-social footer-006-froth" aria-label="Frothing - Surf Break Finder"${NT}><svg viewBox="0 0 44 44" aria-hidden="true"><circle class="cf-bub cf-b1" cx="15" cy="29" r="8.5"/><circle class="cf-bub cf-b2" cx="27" cy="32" r="6"/><circle class="cf-bub cf-b3" cx="31" cy="19" r="7.5"/><circle class="cf-bub cf-b4" cx="20" cy="15" r="4.5"/><circle class="cf-bub cf-b5" cx="11" cy="17" r="3.4"/><circle class="cf-dot" cx="12" cy="26" r="1.8"/><circle class="cf-dot" cx="29" cy="16" r="1.6"/></svg></a></div>`,
+  `<div class="f-social-tilt" data-f-tilt-icon><a href="https://frothing.ca" class="footer-006-social footer-006-froth" aria-label="Frothing - Surf Break Finder"${NT}><svg viewBox="0 0 44 44" aria-hidden="true"><circle class="cf-bub cf-b1" cx="15" cy="29" r="8.5"/><circle class="cf-bub cf-b2" cx="27" cy="32" r="6"/><circle class="cf-bub cf-b3" cx="31" cy="19" r="7.5"/><circle class="cf-bub cf-b4" cx="20" cy="15" r="4.5"/><circle class="cf-bub cf-b5" cx="11" cy="17" r="3.4"/><circle class="cf-dot" cx="12" cy="26" r="1.8"/><circle class="cf-dot" cx="29" cy="16" r="1.6"/></svg></a></div>`,
 ].join('\n      ')
 
 const COLS = GROUPS.map(([title, links]) =>
   `<nav class="footer-006-col" aria-label="${title}"><h2 class="footer-006-col-h">${title}</h2><ul>${links
-    .map(([t, h]) => `<li><div class="f-tilt" data-f-tilt><a href="${h}"${NT}>${t}</a></div></li>`)
+    .map(([t, h]) => `<li><a href="${h}"${NT}>${t}</a></li>`)
     .join('')}</ul></nav>`,
 ).join('\n      ')
 
