@@ -39,7 +39,8 @@ export async function renderPath(path: string): Promise<Rendered> {
       const html = track(rewriteAssets(applyFooter(fillLists(staticHtml, { projects, posts }))))
       return { status: 200, html: p === '/' ? homeCursor(html) : html }
     }
-    return { status: 200, html: track(rewriteAssets(applyFooter(staticHtml))) }
+    const html = track(rewriteAssets(applyFooter(staticHtml)))
+    return { status: 200, html: p === '/' ? homeCursor(html) : html }
   }
 
   const m = p.match(/^\/(projects|blog)\/([^/]+)$/)
