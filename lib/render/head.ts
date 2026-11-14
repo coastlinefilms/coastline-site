@@ -46,6 +46,22 @@ const FONT_BLOCK = `<link rel="preload" href="${FONT_URL.Regular}" as="font" typ
 ${FONT_CSS}
 /* the only Webflow class that asked for Montserrat */
 .scroll-down-text{font-family:Neuemontreal,'Neue Montreal',sans-serif}
+/* Book list posts (Nov 2026): cover left (sticky while you read), copy right; cover and pill link go to the book */
+.post-rich-text .cf-book{display:grid!important;grid-template-columns:176px minmax(0,1fr);column-gap:44px;align-items:start;margin:clamp(64px,8vw,104px) 0 0!important}
+.post-rich-text a.cf-book__cover{position:sticky;top:112px;display:block;border-bottom:0!important;padding:0!important;text-decoration:none!important}
+.post-rich-text .cf-book__cover img{display:block!important;width:100%!important;height:auto!important;margin:0!important;border-radius:3px;box-shadow:0 26px 48px -20px rgba(0,0,0,.85),0 4px 10px rgba(0,0,0,.4);transition:transform .45s cubic-bezier(.2,.7,.2,1),box-shadow .45s cubic-bezier(.2,.7,.2,1)}
+.post-rich-text a.cf-book__cover:hover img,.post-rich-text a.cf-book__cover:focus-visible img{transform:translateY(-4px);box-shadow:0 34px 60px -22px rgba(0,0,0,.9),0 6px 14px rgba(0,0,0,.45)}
+.post-rich-text a.cf-book__cover:focus-visible{outline:2px solid #E4DDCB;outline-offset:6px;border-radius:4px}
+.post-rich-text .cf-book__body>h2:first-child{margin:0 0 .3em!important}
+.post-rich-text .cf-book__body>h2+p{font-family:Neuemontreal,'Neue Montreal',sans-serif!important;font-size:.95rem!important;letter-spacing:.01em;color:rgba(228,221,203,.6)!important;margin:0 0 1.3em!important}
+.post-rich-text .cf-book__body>ul{margin:1.3em 0 1.6em!important}
+.post-rich-text .cf-book__body>p:last-child{margin:0!important}
+.post-rich-text .cf-book__body>p:last-child>a{display:inline-flex;align-items:center;gap:10px;padding:13px 22px!important;border:1.5px solid rgba(228,221,203,.45)!important;border-radius:999px;font-family:Neuemontreal,'Neue Montreal',sans-serif!important;font-size:.95rem!important;font-weight:500;line-height:1;transition:background-color .3s ease,color .3s ease,border-color .3s ease}
+.post-rich-text .cf-book__body>p:last-child>a::after{content:"";width:11px;height:11px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 11.5l7-7M5.5 4.5h6v6' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 11.5l7-7M5.5 4.5h6v6' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;transition:transform .3s ease}
+.post-rich-text .cf-book__body>p:last-child>a:hover{background:#E4DDCB;color:#121413!important;border-color:#E4DDCB!important}
+.post-rich-text .cf-book__body>p:last-child>a:hover::after{transform:translate(2px,-2px)}
+@media(max-width:767px){.post-rich-text .cf-book{grid-template-columns:1fr;row-gap:24px}.post-rich-text a.cf-book__cover{position:static;width:132px}}
+@media(prefers-reduced-motion:reduce){.post-rich-text .cf-book__cover img,.post-rich-text .cf-book__body>p:last-child>a,.post-rich-text .cf-book__body>p:last-child>a::after{transition:none}}
 /* Legal pages (Privacy, Terms, SMS opt-in): unclassed text such as list items fell back to Poppins */
 .smsx-page{font-family:Neuemontreal,'Neue Montreal',sans-serif}
 </style>
