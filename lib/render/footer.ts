@@ -55,9 +55,9 @@ const STYLE = `<style>
 
   /* page directory */
   .footer-006-cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; width: 100%; margin-top: 96px; text-align: center; }
-  .footer-006-col-h { margin: 0 0 20px; font-family: 'Neue Montreal', sans-serif; font-size: 11px; font-weight: 500; line-height: 1.4; letter-spacing: 0.14em; text-transform: uppercase; color: #7A736A; }
-  .footer-006-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 14px; }
-  .footer-006-col a { font-family: 'Neue Montreal', sans-serif; font-size: 18px; font-weight: 500; line-height: 1.35; letter-spacing: -0.01em; color: rgba(228,221,203,0.55); text-decoration: none; transition: color 0.4s ease; }
+  .footer-006-col-h { margin: 0 0 16px; font-family: 'Neue Montreal', sans-serif; font-size: 11px; font-weight: 500; line-height: 1.4; letter-spacing: 0.14em; text-transform: uppercase; color: #7A736A; }
+  .footer-006-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .footer-006-col a { font-family: 'Neue Montreal', sans-serif; font-size: 14px; font-weight: 500; line-height: 1.4; letter-spacing: 0; color: rgba(228,221,203,0.55); text-decoration: none; transition: color 0.4s ease; }
   .footer-006-col a:hover { color: #E4DDCB; }
 
   /* fine print */
@@ -77,7 +77,6 @@ const STYLE = `<style>
     .footer-006-logo { height: 52px; }
     .footer-006-socials { gap: 16px 32px; margin-top: 32px; }
     .footer-006-cols { margin-top: 56px; }
-    .footer-006-col a { font-size: 16px; }
     .footer-006-bottom { flex-direction: column; text-align: center; margin-top: 56px; }
   }
   @media (prefers-reduced-motion: reduce) {
