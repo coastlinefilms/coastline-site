@@ -32,9 +32,13 @@ const STYLE = `<style>
 .cf-nav__links{grid-column:2;display:flex;align-items:center;gap:44px;transition:gap .55s ${EASE}}
 .cf-nav.is-scrolled .cf-nav__links{gap:36px}
 .cf-nav__link{position:relative;font-size:18px;font-weight:400;line-height:1.2;letter-spacing:0;text-decoration:none;white-space:nowrap;color:rgba(228,221,203,.82);transition:color .35s ease}
-.cf-nav__link::after{content:"";position:absolute;left:0;right:0;bottom:-5px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .35s ${EASE}}
-.cf-nav__link:hover{color:#FFFFFF}
-.cf-nav__link:hover::after{transform:scaleX(1)}
+/* Hover: weight shift (Nov 2026). A Medium copy of the word sits on top of the Regular one and crossfades in,
+   so the link brightens and thickens without the word growing wider or nudging its neighbours. */
+.cf-nav__link{display:inline-grid}
+.cf-nav__t{grid-area:1/1;transition:opacity .25s ease}
+.cf-nav__t.is-on{font-weight:500;color:#FFFFFF;opacity:0}
+.cf-nav__link:hover .cf-nav__t,.cf-nav__link:focus-visible .cf-nav__t{opacity:0}
+.cf-nav__link:hover .cf-nav__t.is-on,.cf-nav__link:focus-visible .cf-nav__t.is-on{opacity:1}
 .cf-nav.is-scrolled .cf-nav__link{color:rgba(228,221,203,.86)}
 .cf-nav.is-scrolled .cf-nav__link:hover{color:#FFFFFF}
 
@@ -79,7 +83,7 @@ const STYLE = `<style>
   .cf-nav__cta .cf-nav__arrow{display:none}
 }
 @media(prefers-reduced-motion:reduce){
-  .cf-nav__inner,.cf-nav__logo,.cf-nav__links,.cf-nav__cta,.cf-nav__link::after,.cf-nav__arrow{transition:none}
+  .cf-nav__inner,.cf-nav__logo,.cf-nav__links,.cf-nav__cta,.cf-nav__t,.cf-nav__arrow{transition:none}
 }
 </style>`
 
@@ -87,7 +91,7 @@ const MARKUP = `<nav class="cf-nav" id="cfNav" aria-label="Main">
   <div class="cf-nav__inner">
     <a href="/" class="cf-nav__logo" aria-label="Coastline Films home"><img src="${LOGO}" alt="Coastline Films"></a>
     <div class="cf-nav__links">
-      ${LINKS.map(([t, h]) => `<a href="${h}" class="cf-nav__link">${t}</a>`).join('\n      ')}
+      ${LINKS.map(([t, h]) => `<a href="${h}" class="cf-nav__link"><span class="cf-nav__t">${t}</span><span class="cf-nav__t is-on" aria-hidden="true">${t}</span></a>`).join('\n      ')}
     </div>
     <div class="cf-nav__right">
       <a href="/contact" class="cf-nav__cta" id="cfCta">Book a call ${ARROW}</a>
