@@ -21,7 +21,7 @@ const ARROW =
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
 const STYLE = `<style>
-.cf-nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-content:center;pointer-events:none;font-family:"Neue Montreal","neue-montreal",-apple-system,sans-serif}
+.cf-nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-content:center;pointer-events:none;font-family:Neuemontreal,"Neue Montreal",-apple-system,"Helvetica Neue",sans-serif}
 .cf-nav__inner{pointer-events:auto;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;width:100%;max-width:100%;padding:24px 48px;background:transparent;border-radius:0;margin-top:0;backdrop-filter:blur(0);-webkit-backdrop-filter:blur(0);
   transition:max-width .55s ${EASE},padding .55s ${EASE},background-color .55s ${EASE},border-radius .55s ${EASE},margin-top .55s ${EASE},backdrop-filter .55s ${EASE},-webkit-backdrop-filter .55s ${EASE}}
 .cf-nav.is-scrolled .cf-nav__inner{max-width:1140px;padding:10px 10px 10px 28px;background:rgba(228,221,203,.66);border-radius:56px;margin-top:16px;backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px)}
