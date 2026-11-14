@@ -5,6 +5,8 @@
  * footer embed is kept byte for byte and drives the [data-f-tilt*] wrappers below.
  */
 
+import { applyNav } from './nav'
+
 const NT = ' target="_blank" rel="noopener"'
 const LOGO = 'https://cdn.prod.website-files.com/69ecc5fb6fc18880aa9fc6c6/69fe6c7428307ab091c9a49f_Coastline%20Films%20copy.png'
 
@@ -121,7 +123,7 @@ const MARKUP = `<footer class="footer-006">
 const EMBED_START = '<footer class="footer"><div class="code-embed-7 w-embed w-script"><style>'
 
 /** Replace the footer's styles and markup, keeping the embed's tilt script. No-op on pages without the footer. */
-export function applyFooter(html: string): string {
+function swapFooter(html: string): string {
   const a = html.indexOf(EMBED_START)
   if (a === -1) return html
   const styleStart = a + EMBED_START.length - '<style>'.length
@@ -131,4 +133,9 @@ export function applyFooter(html: string): string {
   const script = html.indexOf('<script>', innerEnd)
   if (innerEnd === -1 || script === -1) return html
   return html.slice(0, styleStart) + STYLE + '\n\n' + MARKUP + '\n' + html.slice(innerEnd + '</footer>'.length)
+}
+
+/** Applies the site chrome: the new header (see nav.ts) and the new footer. */
+export function applyFooter(html: string): string {
+  return applyNav(swapFooter(html))
 }
