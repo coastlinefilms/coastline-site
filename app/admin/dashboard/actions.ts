@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { requireEditor } from '@/lib/admin'
 import { pingIndexNow } from '@/lib/indexnow'
+import { purgeSite } from '@/lib/purge'
 import { STATIC_PAGES } from '@/lib/site-pages'
 import { normalizeSettings, type Redirect, type SettingsKey, type SiteSettings } from '@/lib/settings'
 
@@ -66,6 +67,7 @@ export async function saveSettings<K extends SettingsKey>(key: K, patch: Partial
     .from('site_settings')
     .upsert({ id: 1, data: { ...all, [key]: next }, updated_at: savedAt, updated_by: ed.user.id })
   if (e2) return { ok: false, error: e2.message }
+  await purgeSite()
   revalidatePath('/admin/dashboard', 'layout')
   return { ok: true, savedAt }
 }
@@ -133,6 +135,7 @@ export async function restoreBackup(id: string, what: 'settings' | 'all') {
       if (r.error) return { ok: false as const, error: 'Blog posts: ' + r.error.message }
     }
   }
+  await purgeSite()
   revalidatePath('/admin', 'layout')
   return { ok: true as const }
 }

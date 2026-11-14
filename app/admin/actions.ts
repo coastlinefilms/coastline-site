@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { after } from 'next/server'
 import { pingIndexNow } from '@/lib/indexnow'
+import { purgeSite } from '@/lib/purge'
 import { requireEditor, slugify } from '@/lib/admin'
 import { serverClient } from '@/lib/supabase/server'
 import type { Post, Project } from '@/lib/types'
@@ -48,6 +49,9 @@ async function save(table: 'site_blog_posts' | 'site_projects', id: string | nul
     return { ok: false, error: error.message }
   }
 
+  // Fresh pages for the next visitor (lists, the item itself, sitemap)
+  await purgeSite()
+
   // Tell search engines (IndexNow) about every public URL this save changed, after the response is sent
   const base = table === 'site_projects' ? '/projects/' : '/blog/'
   const changed: string[] = []
@@ -81,6 +85,7 @@ export async function deleteItem(kind: 'post' | 'project', id: string) {
   const { data: gone } = await sb.from(table).select('slug, status').eq('id', id).maybeSingle()
   const { error } = await sb.from(table).delete().eq('id', id)
   if (error) return { ok: false as const, error: error.message }
+  await purgeSite()
   if (gone?.status === 'published') {
     after(() => pingIndexNow(kind === 'post' ? [`/blog/${gone.slug}`, '/blog'] : [`/projects/${gone.slug}`, '/work', '/']))
   }

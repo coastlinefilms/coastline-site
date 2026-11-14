@@ -3,8 +3,8 @@ import type { Img } from '@/lib/types'
 
 /**
  * Site settings (admin > Dashboard), one row in `site_settings`.
- * The public renderer reads them on every request (memoised for 30s per instance,
- * then the edge caches pages for 60s), so a saved change is live within about a minute.
+ * The public renderer reads them on every request (memoised for 5s per instance,
+ * saving purges the CDN cache), so a saved change is live on the next visit.
  */
 
 export type Redirect = { from: string; to: string; code: 301 | 302 }
@@ -53,7 +53,7 @@ let memo: { at: number; v: SiteSettings } | null = null
 
 /** Settings for the public site. Never throws: falls back to the last good copy, then defaults. */
 export async function getSettings(): Promise<SiteSettings> {
-  if (memo && Date.now() - memo.at < 30_000) return memo.v
+  if (memo && Date.now() - memo.at < 5_000) return memo.v
   try {
     const { data, error } = await publicClient().from('site_settings').select('data').eq('id', 1).maybeSingle()
     if (error) throw error

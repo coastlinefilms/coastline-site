@@ -45,7 +45,7 @@ function useGroup<K extends SettingsKey>(key: K, initial: SiteSettings[K], field
       const r = await saveSettings(key, v)
       if (r.ok) {
         setBase(v)
-        notify('Saved. Live on the site within about a minute.')
+        notify('Saved. Live on the site now.')
       } else notify(r.error, true)
     })
   return { v: v as SiteSettings[K], set: (p: Partial<SiteSettings[K]>) => setV((cur) => ({ ...cur, ...p })), dirty, save, pending, reset: () => setV(base) }

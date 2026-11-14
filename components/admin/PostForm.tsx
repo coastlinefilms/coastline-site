@@ -30,7 +30,7 @@ export default function PostForm({ post, projects, posts }: {
       const updated = { ...p, id: res.id, status: next, slug: res.slug }
       setP(updated)
       setSaved(JSON.stringify(updated))
-      flash(next === 'published' ? 'Published. Live on coastlinefilms.ca within a minute.' : status === 'published' ? 'Unpublished' : 'Draft saved')
+      flash(next === 'published' ? 'Published. Live on coastlinefilms.ca now.' : status === 'published' ? 'Unpublished' : 'Draft saved')
       if (!p.id) router.replace(`/admin/journal/${res.id}`)
       else router.refresh()
     })

@@ -1,10 +1,11 @@
 import { renderPath } from '@/lib/render/page'
+import { SITE_CACHE_TAG } from '@/lib/purge'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 // Pages are rendered from Supabase on request and cached at Vercel's edge.
-// CMS edits made in /admin show up within about a minute.
+// Saving in /admin purges the 'site' tag, so CMS and Dashboard changes show up on the next visit.
 const CACHE = 'public, max-age=0, s-maxage=60, stale-while-revalidate=86400'
 
 export async function GET(_req: Request, ctx: { params: Promise<{ path?: string[] }> }) {
@@ -13,11 +14,11 @@ export async function GET(_req: Request, ctx: { params: Promise<{ path?: string[
   try {
     const { status, html, location } = await renderPath(pathname)
     if (location) {
-      return new Response(null, { status, headers: { location, 'cache-control': CACHE } })
+      return new Response(null, { status, headers: { location, 'cache-control': CACHE, 'vercel-cache-tag': SITE_CACHE_TAG } })
     }
     return new Response(html, {
       status,
-      headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': CACHE },
+      headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': CACHE, 'vercel-cache-tag': SITE_CACHE_TAG },
     })
   } catch (err) {
     console.error('render failed', pathname, err)

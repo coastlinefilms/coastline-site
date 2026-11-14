@@ -31,7 +31,7 @@ export default function ProjectForm({ project }: { project: Partial<Project> }) 
       const updated = { ...p, gallery, id: res.id, status: next, slug: res.slug }
       setP(updated)
       setSaved(JSON.stringify(updated))
-      flash(next === 'published' ? 'Published. Live on coastlinefilms.ca within a minute.' : status === 'published' ? 'Unpublished' : 'Draft saved')
+      flash(next === 'published' ? 'Published. Live on coastlinefilms.ca now.' : status === 'published' ? 'Unpublished' : 'Draft saved')
       if (!p.id) router.replace(`/admin/projects/${res.id}`)
       else router.refresh()
     })

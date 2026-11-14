@@ -1,6 +1,7 @@
 import { listPosts, listProjects } from '@/lib/cms'
 import { STATIC_PAGES } from '@/lib/site-pages'
 import { SITE } from '@/lib/render/util'
+import { SITE_CACHE_TAG } from '@/lib/purge'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -36,6 +37,7 @@ export async function GET() {
     headers: {
       'content-type': 'application/xml; charset=utf-8',
       'cache-control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400',
+      'vercel-cache-tag': SITE_CACHE_TAG,
     },
   })
 }
