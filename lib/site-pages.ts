@@ -1,7 +1,7 @@
 // Static (non-CMS) pages, in Webflow's sitemap order, with their Webflow "last updated"
 // dates. When you change one of these pages in content/pages.json, bump its date.
 export const STATIC_PAGES: { path: string; lastmod: string; sitemap: boolean }[] = [
-  { path: '/', lastmod: '2026-11-04T17:46:28.034Z', sitemap: true },
+  { path: '/', lastmod: '2026-11-14T05:20:00.000Z', sitemap: true },
   { path: '/work', lastmod: '2026-10-30T23:59:33.716Z', sitemap: true },
   { path: '/about', lastmod: '2026-10-25T17:02:52.459Z', sitemap: true },
   { path: '/contact', lastmod: '2026-11-12T21:58:56.774Z', sitemap: true },
