@@ -11,7 +11,7 @@ export const STATIC_PAGES: { path: string; lastmod: string; sitemap: boolean }[]
   { path: '/muskoka-toronto-videographer', lastmod: '2026-11-01T15:25:15.607Z', sitemap: true },
   { path: '/monthly-content-retainer', lastmod: '2026-10-31T00:20:12.311Z', sitemap: true },
   { path: '/video-production', lastmod: '2026-10-31T00:21:52.554Z', sitemap: true },
-  { path: '/privacy', lastmod: '2026-11-10T00:34:33.393Z', sitemap: true },
+  { path: '/privacy', lastmod: '2026-11-14T16:20:00.000Z', sitemap: true },
   { path: '/sms-opt-in', lastmod: '2026-11-10T00:56:04.729Z', sitemap: true },
   { path: '/terms', lastmod: '2026-11-05T21:38:41.687Z', sitemap: true },
   { path: '/booked', lastmod: '2026-11-06T16:37:49.968Z', sitemap: false },

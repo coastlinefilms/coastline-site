@@ -30,7 +30,8 @@ function homeCursor(html: string) {
  * legal copy swapped for a short message and two ways forward.
  */
 const NOT_FOUND = (() => {
-  const base = PAGES['/privacy']
+  // The old Privacy page's site shell (nav, styles, footer), kept for the 404 when /privacy became a plain legal page
+  const base = PAGES.__shell404 ?? PAGES['/privacy']
   const a = base.indexOf('<section class="cc-legal">')
   const b = base.indexOf('</section>', a)
   if (a === -1 || b === -1) return PAGES.__404
@@ -77,7 +78,7 @@ async function renderCore(path: string): Promise<Rendered> {
   const p = path === '' ? '/' : path
 
   const staticHtml = PAGES[p]
-  if (staticHtml && p !== '__404') {
+  if (staticHtml && !p.startsWith('__')) {
     if (staticHtml.includes('<!--CMS:')) {
       const [projects, posts] = await Promise.all([listProjects(), listPosts()])
       const html = track(rewriteAssets(applyFooter(fillLists(staticHtml, { projects, posts }))))
