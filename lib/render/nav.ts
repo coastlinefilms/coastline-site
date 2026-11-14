@@ -8,11 +8,10 @@ const LOGO = 'https://cdn.prod.website-files.com/69ecc5fb6fc18880aa9fc6c6/69fe6c
 const TEXTURE = 'https://cdn.prod.website-files.com/69ecc5fb6fc18880aa9fc6c6/6a12480e77f832e5f99643e1_webtexture1.webp'
 
 const LINKS: [string, string][] = [
+  ['About', '/about'],
   ['Work', '/work'],
   ['Services', '/video-production'],
-  ['Studio', '/about'],
-  ['Clients', '/#clients'],
-  ['Field Notes', '/journal'],
+  ['Contact', '/contact'],
 ]
 
 const ARROW =
