@@ -11,7 +11,9 @@ export function staticPageNames(): Record<string, string> {
     const t = html.match(/<title>([\s\S]*?)<\/title>/)?.[1]
     if (!t) continue
     const first = decode(t).split(' | ')[0].trim()
-    out[path] = first === 'Coastline Films' ? path.slice(1) : first
+    // Titles like "Coastline Films | Work Portfolio": name the page after its path, as Webflow's page list does ("Work")
+    const fromPath = path.slice(1).split('/').pop()!.replace(/-/g, ' ')
+    out[path] = first === 'Coastline Films' ? fromPath.charAt(0).toUpperCase() + fromPath.slice(1) : first
   }
   return out
 }

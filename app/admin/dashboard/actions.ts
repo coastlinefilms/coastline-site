@@ -108,7 +108,15 @@ export async function restoreBackup(id: string, what: 'settings' | 'all') {
   const ed = await requireEditor()
   const { data, error } = await ed.sb.from('site_backups').select('snapshot, created_at').eq('id', id).maybeSingle()
   if (error || !data) return { ok: false as const, error: error?.message ?? 'Backup not found.' }
-  const safety = await createBackup(`Before restoring ${new Date(data.created_at).toISOString().slice(0, 16).replace('T', ' ')} UTC`)
+  const { data: cur } = await ed.sb.from('site_settings').select('data').eq('id', 1).maybeSingle()
+  const tz = normalizeSettings(cur?.data).general.timeZone
+  let when: string
+  try {
+    when = new Intl.DateTimeFormat('en-CA', { timeZone: tz, dateStyle: 'medium', timeStyle: 'short' }).format(new Date(data.created_at))
+  } catch {
+    when = new Date(data.created_at).toISOString().slice(0, 16).replace('T', ' ') + ' UTC'
+  }
+  const safety = await createBackup(`Before restoring the backup from ${when}`)
   if (!safety.ok) return safety
   const snap = data.snapshot as { settings: unknown; posts: Record<string, unknown>[]; projects: Record<string, unknown>[] }
   const r1 = await ed.sb.from('site_settings').upsert({ id: 1, data: normalizeSettings(snap.settings), updated_at: new Date().toISOString(), updated_by: ed.user.id })
