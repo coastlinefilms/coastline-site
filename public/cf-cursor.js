@@ -1,11 +1,12 @@
 /* Home page cursor: an eased dot with a thin trailing line (modelled on mosaic.com). Desktop / mouse only. */
+/* Sits one layer under the intro loader (#cfl, z 2147483000) so the cursor never shows on the loader. */
 (function () {
   if (!matchMedia('(hover: hover) and (pointer: fine) and (min-width: 768px)').matches) return
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
   var NS = 'http://www.w3.org/2000/svg', N = 12, EASE = reduce ? 1 : 0.15
   var wrap = document.createElement('div')
   wrap.setAttribute('aria-hidden', 'true')
-  wrap.style.cssText = 'position:fixed;inset:0;z-index:2147483000;pointer-events:none;contain:strict;overflow:hidden;mix-blend-mode:difference;opacity:0;transition:opacity .3s cubic-bezier(.3,.1,.1,1)'
+  wrap.style.cssText = 'position:fixed;inset:0;z-index:2147482990;pointer-events:none;contain:strict;overflow:hidden;mix-blend-mode:difference;opacity:0;transition:opacity .3s cubic-bezier(.3,.1,.1,1)'
   var svg = document.createElementNS(NS, 'svg')
   svg.setAttribute('width', '100%'); svg.setAttribute('height', '100%')
   svg.style.display = 'block'
