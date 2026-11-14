@@ -6,8 +6,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   async redirects() {
     return [
-      // Live on Webflow today: /blog redirects to the Journal index
-      { source: '/blog', destination: '/journal', statusCode: 301 },
+      // The blog index moved from /journal to /blog (Nov 2026); keep old links and rankings
+      { source: '/journal', destination: '/blog', statusCode: 301 },
     ]
   },
 }

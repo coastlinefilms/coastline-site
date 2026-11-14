@@ -79,7 +79,7 @@ export default function PostForm({ post, projects, posts }: {
             <DateField label="Publish Date" value={p.publish_date} onChange={(v) => set('publish_date', v)} />
             <Text label="Author" help="Who wrote the post. Defaults to Coastline Films." value={p.author} onChange={(v) => set('author', v)} />
             <NumberField label="Reading Time Minutes" help="Estimated minutes to read - integer only" value={p.reading_time_minutes} onChange={(v) => set('reading_time_minutes', v)} />
-            <Switch label="Featured on the Journal" help="Shows this post in the Featured slot at the top of /journal. Only one post can be featured." checked={!!p.journal_featured} onChange={(v) => set('journal_featured', v)} />
+            <Switch label="Featured on the Journal" help="Shows this post in the Featured slot at the top of /blog. Only one post can be featured." checked={!!p.journal_featured} onChange={(v) => set('journal_featured', v)} />
           </Section>
 
           <Section title="Section 1 (Opening + Image 1)" desc="First 2 paragraphs of the article, followed by the first inline image and optional caption">
