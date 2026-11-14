@@ -46,6 +46,8 @@ const FONT_BLOCK = `<link rel="preload" href="${FONT_URL.Regular}" as="font" typ
 ${FONT_CSS}
 /* the only Webflow class that asked for Montserrat */
 .scroll-down-text{font-family:Neuemontreal,'Neue Montreal',sans-serif}
+/* Legal pages (Privacy, Terms, SMS opt-in): unclassed text such as list items fell back to Poppins */
+.smsx-page{font-family:Neuemontreal,'Neue Montreal',sans-serif}
 </style>
 <style id="cf-no-eyebrows">
 /* No eyebrow labels above headings (Nov 2026). Location/type meta on case cards stays: it carries local SEO. */
@@ -66,7 +68,6 @@ html body .journal-container:has(>.cf-kw)>:not(.journal-h1):not(.cf-kw){order:3}
 function googleFonts(html: string): string {
   const fams: string[] = []
   if (/font-family:[^;{}"]*Space Mono/.test(html) && !/family=Space\+Mono/.test(html)) fams.push('family=Space+Mono:wght@400;700')
-  if (/smsx-page/.test(html) && !/family=Poppins/.test(html)) fams.push('family=Poppins:wght@400;500;600;700')
   if (!fams.length) return ''
   return `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

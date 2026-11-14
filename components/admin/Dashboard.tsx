@@ -353,12 +353,11 @@ function Fonts() {
   const fonts = [
     { name: 'Neue Montreal', family: 'cf-nm', source: 'Licensed, self-hosted', styles: 'Light, Regular, Medium, Bold + italics (8)', used: 'Every page: headings, body, nav and footer' },
     { name: 'Space Mono', family: '"Space Mono", monospace', source: 'Google Fonts', styles: 'Regular, Bold', used: 'Only pages that use it (calculator details, labels)' },
-    { name: 'Poppins', family: 'Poppins, sans-serif', source: 'Google Fonts', styles: 'Regular to Bold', used: 'SMS opt-in page' },
   ]
   return (
     <Card title="Fonts" desc="Fonts the site loads. Only the families a page needs are downloaded, so pages stay fast.">
       <style>{`@font-face{font-family:'cf-nm';src:url(${FONT_URL}) format('opentype');font-weight:400}@font-face{font-family:'cf-nm';src:url(${FONT_BOLD}) format('opentype');font-weight:700}`}</style>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Poppins:wght@400;700&display=swap" />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" />
       <div className="db-fonts">
         {fonts.map((f) => (
           <div className="db-font" key={f.name}>
