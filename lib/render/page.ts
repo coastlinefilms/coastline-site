@@ -1,6 +1,7 @@
 import pages from '@/content/pages.json'
 import { listPosts, listProjects, getPost, getProject } from '@/lib/cms'
 import { rewriteAssets } from './assets'
+import { phonePerf } from './perf'
 import { applyFooter } from './footer'
 import { fillLists } from './lists'
 import { renderProject } from './project'
@@ -14,6 +15,7 @@ export type Rendered = { status: number; html: string; location?: string }
 /** First-party analytics beacon (see public/cf-a.js). */
 function track(html: string, status = 200) {
   const tag = `<script defer src="/cf-a.js" data-status="${status}"></script>`
+  html = phonePerf(html)
   const i = html.lastIndexOf('</body>')
   return i === -1 ? html + tag : html.slice(0, i) + tag + html.slice(i)
 }
