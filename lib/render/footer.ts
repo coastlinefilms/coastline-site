@@ -6,6 +6,7 @@
  */
 
 import { applyNav } from './nav'
+import { applyHead } from './head'
 
 const NT = ' target="_blank" rel="noopener"'
 const LOGO = 'https://cdn.prod.website-files.com/69ecc5fb6fc18880aa9fc6c6/69fe6c7428307ab091c9a49f_Coastline%20Films%20copy.png'
@@ -75,7 +76,7 @@ const STYLE = `<style>
 
   /* fine print */
   .footer-006-bottom { width: 100%; margin-top: 48px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
-  .footer-006-copy { margin: 0; font-family: Neuemontreal, 'Neue Montreal', sans-serif; font-size: 10px; line-height: 1.8; letter-spacing: 0.10em; text-transform: uppercase; color: rgba(228,221,203,0.25); }
+  .footer-006-copy { margin: 0; font-family: Neuemontreal, 'Neue Montreal', sans-serif; font-size: 11px; line-height: 1.8; letter-spacing: 0.10em; text-transform: uppercase; color: rgba(228,221,203,0.25); }
   .footer-006-copy a { color: rgba(228,221,203,0.45); text-decoration: none; transition: color 0.25s ease; }
   .footer-006-copy a:hover { color: #E4DDCB; }
   .footer-006-legal a + a { margin-left: 24px; }
@@ -148,7 +149,7 @@ function swapFooter(html: string): string {
   return html.slice(0, styleStart) + STYLE + '\n\n' + MARKUP + '\n' + html.slice(innerEnd + '</footer>'.length)
 }
 
-/** Applies the site chrome: the new header (see nav.ts) and the new footer. */
+/** Applies the site chrome: head fixes (head.ts), the new header (nav.ts) and the new footer. */
 export function applyFooter(html: string): string {
-  return applyNav(swapFooter(html))
+  return applyHead(applyNav(swapFooter(html)))
 }

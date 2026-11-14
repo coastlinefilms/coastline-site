@@ -73,7 +73,13 @@ export function fillLists(html: string, data: { projects: Project[]; posts: Post
       case 'coverflow':
         return renderCoverflow(data.projects)
       case 'work':
-        return sortWork(data.projects).map((p) => projectItem(tpl.work, p)).join('')
+        return sortWork(data.projects)
+          .map((p) => {
+            const item = projectItem(tpl.work, p)
+            // no hover clip: drop the empty <video> (it errors and shows nothing)
+            return p.hover_video_url ? item : item.replace(/<video\b[^>]*\bsrc=""[^>]*>\s*<\/video>/g, '')
+          })
+          .join('')
       case 'journalFeatured': {
         const sorted = sortPosts(data.posts)
         const f = sorted.find((p) => p.journal_featured) ?? sorted[0]

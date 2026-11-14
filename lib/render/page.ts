@@ -24,8 +24,42 @@ function homeCursor(html: string) {
   return i === -1 ? html + tag : html.slice(0, i) + tag + html.slice(i)
 }
 
+/**
+ * Branded 404 (Nov 2026): the Privacy page's shell (nav, styles, footer) with the
+ * legal copy swapped for a short message and two ways forward.
+ */
+const NOT_FOUND = (() => {
+  const base = PAGES['/privacy']
+  const a = base.indexOf('<section class="cc-legal">')
+  const b = base.indexOf('</section>', a)
+  if (a === -1 || b === -1) return PAGES.__404
+  const body = `<style>
+.cf-404{min-height:78svh;display:flex;align-items:center;justify-content:center;padding:160px 24px 96px;text-align:center;font-family:Neuemontreal,'Neue Montreal',sans-serif}
+.cf-404__h{margin:0;font-size:clamp(44px,7vw,104px);line-height:1;font-weight:400;letter-spacing:-.03em;color:#E4DDCB}
+.cf-404__h strong{font-weight:700;color:#fff}
+.cf-404__p{margin:22px auto 0;max-width:460px;font-size:17px;line-height:1.55;color:rgba(228,221,203,.7)}
+.cf-404__btns{display:flex;justify-content:center;gap:12px;margin-top:36px;flex-wrap:wrap}
+.cf-404__btn{display:inline-flex;align-items:center;gap:10px;padding:16px 28px;border-radius:999px;font-size:16px;font-weight:500;text-decoration:none;transition:background-color .3s ease,color .3s ease,border-color .3s ease}
+.cf-404__btn.is-solid{background:#E4DDCB;color:#121413}.cf-404__btn.is-solid:hover{background:#fff}
+.cf-404__btn.is-line{border:1.5px solid rgba(228,221,203,.5);color:#E4DDCB}.cf-404__btn.is-line:hover{background:#E4DDCB;border-color:#E4DDCB;color:#121413}
+.cf-404__home{display:inline-block;margin-top:28px;font-size:15px;color:rgba(228,221,203,.62);text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(228,221,203,.3)}
+.cf-404__home:hover{color:#E4DDCB}
+@media(max-width:600px){.cf-404__btn{width:100%;justify-content:center}}
+</style>
+<section class="cf-404"><div>
+  <h1 class="cf-404__h">Page not <strong>found.</strong></h1>
+  <p class="cf-404__p">This page has moved or never existed. Here is where to go next.</p>
+  <div class="cf-404__btns"><a class="cf-404__btn is-solid" href="/work">See the work <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 11.5l7-7M5.5 4.5h6v6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a class="cf-404__btn is-line" href="/contact">Book a call</a></div>
+  <a class="cf-404__home" href="/">Back to home</a>
+</div></section>`
+  return (base.slice(0, a) + body + base.slice(b + '</section>'.length))
+    .replace(/<title>[\s\S]*?<\/title>/, '<title>Page not found | Coastline Films</title>')
+    .replace(/<link href="[^"]*" rel="canonical"\/?>/, '')
+    .replace('<meta charset="utf-8"/>', '<meta charset="utf-8"/><meta name="robots" content="noindex"/>')
+})()
+
 function notFound(): Rendered {
-  return { status: 404, html: track(rewriteAssets(applyFooter(PAGES.__404)), 404) }
+  return { status: 404, html: track(rewriteAssets(applyFooter(NOT_FOUND)), 404) }
 }
 
 /** Render any public path exactly as Webflow served it. */
@@ -47,8 +81,8 @@ export async function renderPath(path: string): Promise<Rendered> {
   if (m) {
     const slug = decodeURIComponent(m[2])
     if (m[1] === 'projects') {
-      const proj = await getProject(slug)
-      return proj ? { status: 200, html: track(rewriteAssets(applyFooter(renderProject(proj)))) } : notFound()
+      const [proj, all] = await Promise.all([getProject(slug), listProjects()])
+      return proj ? { status: 200, html: track(rewriteAssets(applyFooter(renderProject(proj, all)))) } : notFound()
     }
     const post = await getPost(slug)
     return post ? { status: 200, html: track(rewriteAssets(applyFooter(renderPost(post)))) } : notFound()

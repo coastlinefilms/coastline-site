@@ -1,6 +1,6 @@
 /**
  * Site header (Nov 2026): logo left, page links centred, cream "Book a call" pill
- * right. On scroll it tightens into the existing frosted pill. Swapped in at render
+ * right. On scroll it tightens into the existing frosted pill. Scrolled state is a dark glass pill (bone text) so it reads over light and dark sections. Swapped in at render
  * time so content/pages.json keeps the captured Webflow header untouched.
  */
 
@@ -23,12 +23,11 @@ const STYLE = `<style>
 .cf-nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-content:center;pointer-events:none;font-family:Neuemontreal,"Neue Montreal",-apple-system,"Helvetica Neue",sans-serif}
 .cf-nav__inner{pointer-events:auto;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;width:100%;max-width:100%;padding:24px 48px;background:transparent;border-radius:0;margin-top:0;backdrop-filter:blur(0);-webkit-backdrop-filter:blur(0);
   transition:max-width .55s ${EASE},padding .55s ${EASE},background-color .55s ${EASE},border-radius .55s ${EASE},margin-top .55s ${EASE},backdrop-filter .55s ${EASE},-webkit-backdrop-filter .55s ${EASE}}
-.cf-nav.is-scrolled .cf-nav__inner{max-width:1140px;padding:10px 10px 10px 28px;background:rgba(228,221,203,.66);border-radius:56px;margin-top:16px;backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px)}
+.cf-nav.is-scrolled .cf-nav__inner{max-width:1140px;padding:10px 10px 10px 28px;background:rgba(18,20,19,.62);border-radius:56px;margin-top:16px;backdrop-filter:blur(26px) saturate(1.2);-webkit-backdrop-filter:blur(26px) saturate(1.2);box-shadow:0 12px 40px -12px rgba(0,0,0,.55),inset 0 0 0 1px rgba(228,221,203,.08)}
 
 .cf-nav__logo{grid-column:1;justify-self:start;display:block;height:40px;transition:height .55s ${EASE}}
 .cf-nav.is-scrolled .cf-nav__logo{height:32px}
 .cf-nav__logo img{height:100%;width:auto;display:block;transition:filter .4s ease}
-.cf-nav.is-scrolled .cf-nav__logo img{filter:brightness(0) invert(1)}
 
 .cf-nav__links{grid-column:2;display:flex;align-items:center;gap:44px;transition:gap .55s ${EASE}}
 .cf-nav.is-scrolled .cf-nav__links{gap:36px}
@@ -36,8 +35,8 @@ const STYLE = `<style>
 .cf-nav__link::after{content:"";position:absolute;left:0;right:0;bottom:-5px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .35s ${EASE}}
 .cf-nav__link:hover{color:#FFFFFF}
 .cf-nav__link:hover::after{transform:scaleX(1)}
-.cf-nav.is-scrolled .cf-nav__link{color:#FFFFFF}
-.cf-nav.is-scrolled .cf-nav__link:hover{color:#121413}
+.cf-nav.is-scrolled .cf-nav__link{color:rgba(228,221,203,.86)}
+.cf-nav.is-scrolled .cf-nav__link:hover{color:#FFFFFF}
 
 .cf-nav__right{grid-column:3;justify-self:end;display:flex;align-items:center;gap:12px}
 .cf-nav__cta{display:inline-flex;align-items:center;gap:10px;padding:16px 26px;border-radius:999px;font-size:17px;font-weight:500;line-height:1;letter-spacing:-.005em;text-decoration:none;white-space:nowrap;background:#E4DDCB;color:#121413;transform-style:preserve-3d;will-change:transform;
@@ -45,8 +44,7 @@ const STYLE = `<style>
 .cf-nav__cta:hover{background:#FFFFFF}
 .cf-nav__arrow{display:block;transition:transform .3s ${EASE}}
 .cf-nav__cta:hover .cf-nav__arrow{transform:translate(2px,-2px)}
-.cf-nav.is-scrolled .cf-nav__cta{padding:14px 24px;background:#121413;color:#E4DDCB}
-.cf-nav.is-scrolled .cf-nav__cta:hover{background:#000000;color:#FFFFFF}
+.cf-nav.is-scrolled .cf-nav__cta{padding:14px 24px}
 .cf-nav__link:focus-visible,.cf-nav__cta:focus-visible,.cf-nav__logo:focus-visible,.cf-nav__burger:focus-visible{outline:2px solid #E4DDCB;outline-offset:4px;border-radius:4px}
 .cf-nav__cta:focus-visible{border-radius:999px}
 
@@ -63,7 +61,7 @@ const STYLE = `<style>
   .cf-nav.is-scrolled .cf-nav__cta{padding:11px 16px}
   .cf-nav__burger{display:flex;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;padding:10px;background:none;border:0;cursor:pointer}
   .cf-nav__burger span{width:24px;height:2px;background:#E4DDCB;display:block;transition:background-color .4s ease}
-  .cf-nav.is-scrolled .cf-nav__burger span{background:#FFFFFF}
+  .cf-nav.is-scrolled .cf-nav__burger span{background:#E4DDCB}
 
   .cf-nav__mobile{position:fixed;inset:0;padding:40px 24px 48px;background-color:#121413;background-image:linear-gradient(rgba(18,20,19,.55),rgba(18,20,19,.55)),url("${TEXTURE}");background-size:cover;background-position:center;display:flex;flex-direction:column;align-items:center;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .4s ease,visibility 0s linear .4s;z-index:1001}
   .cf-nav__mobile.is-open{opacity:1;pointer-events:auto;visibility:visible;transition:opacity .4s ease}

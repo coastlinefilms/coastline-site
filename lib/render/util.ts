@@ -42,6 +42,14 @@ export function setHead($: CheerioAPI, f: HeadFields) {
   set('meta[property="og:image"]', f.ogImage)
   set('meta[name="twitter:image"]', f.ogImage)
   set('meta[property="og:image:alt"]', f.ogImageAlt)
+  // Some templates (e.g. Projects) have no share-image tags at all: add them
+  if (f.ogImage && !$('meta[property="og:image"]').length) {
+    const alt = (f.ogImageAlt ?? '').replace(/"/g, '&quot;')
+    $('head').append(
+      `<meta property="og:image" content="${f.ogImage}"><meta name="twitter:image" content="${f.ogImage}">` +
+        (alt ? `<meta property="og:image:alt" content="${alt}">` : ''),
+    )
+  }
   set('meta[property="og:url"]', f.canonical)
   $('link[rel="canonical"]').attr('href', f.canonical)
 }
