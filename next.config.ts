@@ -20,6 +20,9 @@ const nextConfig: NextConfig = {
     return [
       // The blog index moved from /journal to /blog (Nov 2026); keep old links and rankings
       { source: '/journal', destination: '/blog', statusCode: 301 },
+      // Mirrored from the Webflow hosting redirects so old links keep working after the swap
+      { source: '/muskoka', destination: '/muskoka-toronto-videographer', statusCode: 301 },
+      { source: '/book', destination: 'https://api.leadconnectorhq.com/widget/bookings/coastline-strategy-call', statusCode: 302 },
     ]
   },
 }

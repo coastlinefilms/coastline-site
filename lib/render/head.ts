@@ -52,6 +52,16 @@ ${FONT_CSS}
 <style id="cf-no-eyebrows">
 /* No eyebrow labels above headings (Nov 2026). Location/type meta on case cards stays: it carries local SEO. */
 html body :is(.cf-eyebrow,.cf-hero__eyebrow,.lp-eyebrow,.sv-eyebrow,.cfw-eyebrow,.cfw-cta__eyebrow,.cfw-cta__label,.ab-tag,.ab-label__name,.ab-mini,.ab-label__num,.cf-faq__label,.smsx-eyebrow,.journal-eyebrow,.journal-section-label,.post-eyebrow,.post-calc-eyebrow,.post-cta-eyebrow,.cc-ty-eyebrow,.lp-svc__num,.work-client){display:none!important}
+/* Keyword lines (location / service) stay visible for SEO, shown as a plain tagline under the headline */
+html body .lp-hero__inner{display:flex;flex-direction:column}
+html body .lp-hero__inner>.lp-h1{order:1}
+html body .lp-hero__inner>.lp-eyebrow{display:block!important;order:2;margin:20px 0 0;font-size:18px;line-height:1.4;font-weight:500;letter-spacing:0;text-transform:none;color:#E4DDCB}
+html body .lp-hero__inner>:not(.lp-h1):not(.lp-eyebrow){order:3}
+html body .journal-container:has(>.cf-kw){display:flex;flex-direction:column}
+html body .journal-container>.journal-h1{order:1}
+html body .journal-container>.cf-kw{display:block!important;order:2;margin:18px 0 0;font-size:18px;line-height:1.4;font-weight:500;letter-spacing:0;text-transform:none;color:#E4DDCB}
+html body .journal-container:has(>.cf-kw)>:not(.journal-h1):not(.cf-kw){order:3}
+@media(max-width:767px){html body .lp-hero__inner>.lp-eyebrow,html body .journal-container>.cf-kw{font-size:16px;margin-top:14px}}
 </style>`
 
 const GA = `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ID}"></script>
