@@ -69,15 +69,15 @@ const STYLE = `<style>
 
   @media (max-width: 991px) {
     .footer-006 { padding: 48px 32px 28px; }
-    .footer-006-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 24px; margin-top: 40px; }
+    .footer-006-cols { gap: 16px; margin-top: 40px; }
     .footer-006-bottom { margin-top: 40px; }
   }
   @media (max-width: 600px) {
     .footer-006 { padding: 40px 24px 24px; }
     .footer-006-logo { height: 48px; }
-    .footer-006-socials { gap: 16px 32px; margin-top: 24px; }
-    .footer-006-cols { margin-top: 32px; }
-    .footer-006-bottom { flex-direction: column; text-align: center; margin-top: 32px; }
+    .footer-006-socials { gap: 16px 24px; margin-top: 24px; }
+    .footer-006-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 16px; margin-top: 32px; }
+    .footer-006-bottom { flex-direction: column; text-align: center; margin-top: 24px; gap: 8px; }
   }
   @media (prefers-reduced-motion: reduce) {
     .footer-006-froth .cf-bub { animation: none; }
