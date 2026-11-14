@@ -23,7 +23,14 @@ export async function GET(req: Request) {
   const input = Buffer.from(await res.arrayBuffer())
   let out: Buffer
   try {
-    out = await sharp(input).trim({ threshold: 1 }).webp({ lossless: true }).toBuffer()
+    // trim the padding, then add a small transparent margin back so anti-aliased edges never clip
+    const trimmed = await sharp(input).trim({ threshold: 1 }).png().toBuffer()
+    const meta = await sharp(trimmed).metadata()
+    const pad = Math.max(2, Math.round(Math.max(meta.width ?? 0, meta.height ?? 0) * 0.04))
+    out = await sharp(trimmed)
+      .extend({ top: pad, bottom: pad, left: pad, right: pad, background: { r: 0, g: 0, b: 0, alpha: 0 } })
+      .webp({ lossless: true })
+      .toBuffer()
   } catch {
     out = input
   }
