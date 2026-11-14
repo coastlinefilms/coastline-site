@@ -74,7 +74,7 @@ const STYLE = `<style>
   .footer-006-col a:hover { color: #E4DDCB; }
 
   /* fine print */
-  .footer-006-bottom { width: 100%; margin-top: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px 32px; }
+  .footer-006-bottom { width: 100%; margin-top: 48px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
   .footer-006-copy { margin: 0; font-family: Neuemontreal, 'Neue Montreal', sans-serif; font-size: 10px; line-height: 1.8; letter-spacing: 0.10em; text-transform: uppercase; color: rgba(228,221,203,0.25); }
   .footer-006-copy a { color: rgba(228,221,203,0.45); text-decoration: none; transition: color 0.25s ease; }
   .footer-006-copy a:hover { color: #E4DDCB; }
