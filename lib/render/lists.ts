@@ -1,5 +1,6 @@
 import templates from '@/content/templates.json'
 import type { Post, Project } from '@/lib/types'
+import { renderCoverflow } from './coverflow'
 
 type T = Record<string, string>
 const tpl = templates as unknown as T
@@ -69,6 +70,8 @@ export function fillLists(html: string, data: { projects: Project[]; posts: Post
     switch (name) {
       case 'home':
         return homeFeatured(data.projects).map((p) => projectItem(tpl.home, p)).join('')
+      case 'coverflow':
+        return renderCoverflow(data.projects)
       case 'work':
         return sortWork(data.projects).map((p) => projectItem(tpl.work, p)).join('')
       case 'journalFeatured': {
