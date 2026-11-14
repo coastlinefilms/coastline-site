@@ -2,6 +2,8 @@
 
 import { revalidatePath } from 'next/cache'
 import { requireEditor } from '@/lib/admin'
+import { pingIndexNow } from '@/lib/indexnow'
+import { STATIC_PAGES } from '@/lib/site-pages'
 import { normalizeSettings, type Redirect, type SettingsKey, type SiteSettings } from '@/lib/settings'
 
 type Result = { ok: true; savedAt: string } | { ok: false; error: string }
@@ -133,4 +135,22 @@ export async function restoreBackup(id: string, what: 'settings' | 'all') {
   }
   revalidatePath('/admin', 'layout')
   return { ok: true as const }
+}
+
+/** Send every public URL (same list as the sitemap) to IndexNow. */
+export async function submitAllToIndexNow() {
+  const ed = await requireEditor()
+  const [p, b] = await Promise.all([
+    ed.sb.from('site_projects').select('slug').eq('status', 'published'),
+    ed.sb.from('site_blog_posts').select('slug').eq('status', 'published'),
+  ])
+  const urls = [
+    ...STATIC_PAGES.filter((x) => x.sitemap).map((x) => x.path),
+    ...(p.data ?? []).map((x) => `/projects/${x.slug}`),
+    ...(b.data ?? []).map((x) => `/blog/${x.slug}`),
+  ]
+  const r = await pingIndexNow(urls)
+  if (r.skipped === 'not production') return { ok: false as const, error: 'IndexNow only runs on the live site.' }
+  if (!r.ok) return { ok: false as const, error: `IndexNow didn't accept the request (status ${r.status || 'no response'}). Try again in a few minutes.` }
+  return { ok: true as const, count: r.count }
 }

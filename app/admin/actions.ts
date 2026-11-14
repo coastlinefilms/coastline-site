@@ -1,6 +1,8 @@
 'use server'
 
 import { redirect } from 'next/navigation'
+import { after } from 'next/server'
+import { pingIndexNow } from '@/lib/indexnow'
 import { requireEditor, slugify } from '@/lib/admin'
 import { serverClient } from '@/lib/supabase/server'
 import type { Post, Project } from '@/lib/types'
@@ -37,11 +39,23 @@ async function save(table: 'site_blog_posts' | 'site_projects', id: string | nul
   // "published_at" doubles as the sitemap lastmod, so bump it on every save of a live item
   if (row.status === 'published') row.published_at = new Date().toISOString()
 
+  const before = id ? (await sb.from(table).select('slug, status').eq('id', id).maybeSingle()).data : null
+
   const q = id ? sb.from(table).update(row).eq('id', id) : sb.from(table).insert(row)
   const { data, error } = await q.select('id, slug').single()
   if (error) {
     if (error.code === '23505') return { ok: false, error: `The URL "${row.slug}" is already used by another item.` }
     return { ok: false, error: error.message }
+  }
+
+  // Tell search engines (IndexNow) about every public URL this save changed, after the response is sent
+  const base = table === 'site_projects' ? '/projects/' : '/blog/'
+  const changed: string[] = []
+  if (row.status === 'published') changed.push(base + data.slug)
+  if (before?.status === 'published' && (row.status !== 'published' || before.slug !== data.slug)) changed.push(base + before.slug)
+  if (changed.length) {
+    changed.push(...(table === 'site_projects' ? ['/work', '/'] : ['/blog']))
+    after(() => pingIndexNow(changed))
   }
   return { ok: true, id: data.id, slug: data.slug }
 }
@@ -63,8 +77,13 @@ export async function saveProject(id: string | null, input: Partial<Project>) {
 export async function deleteItem(kind: 'post' | 'project', id: string) {
   await requireEditor()
   const sb = await serverClient()
-  const { error } = await sb.from(kind === 'post' ? 'site_blog_posts' : 'site_projects').delete().eq('id', id)
+  const table = kind === 'post' ? 'site_blog_posts' : 'site_projects'
+  const { data: gone } = await sb.from(table).select('slug, status').eq('id', id).maybeSingle()
+  const { error } = await sb.from(table).delete().eq('id', id)
   if (error) return { ok: false as const, error: error.message }
+  if (gone?.status === 'published') {
+    after(() => pingIndexNow(kind === 'post' ? [`/blog/${gone.slug}`, '/blog'] : [`/projects/${gone.slug}`, '/work', '/']))
+  }
   redirect(kind === 'post' ? '/admin/journal' : '/admin/projects')
 }
 

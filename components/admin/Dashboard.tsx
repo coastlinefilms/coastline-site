@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { createBackup, deleteBackup, restoreBackup, saveSettings } from '@/app/admin/dashboard/actions'
+import { createBackup, deleteBackup, restoreBackup, saveSettings, submitAllToIndexNow } from '@/app/admin/dashboard/actions'
 import { matchRedirect, type Redirect, type SettingsKey, type SiteSettings } from '@/lib/settings'
 import { DASHBOARD_SECTIONS, type SectionSlug } from './nav'
 import { ImageField, Toast, useLeaveGuard } from './fields'
@@ -306,6 +306,7 @@ function Seo({ s, n, x }: { s: SiteSettings; n: Notify; x: DashboardExtra }) {
           <div className="db-note">{x.sitemapCount ?? '-'} URLs</div>
         </Row>
       </Card>
+      <IndexNowCard n={n} count={x.sitemapCount} />
       <Card title="robots.txt" group={robots}>
         <Row htmlFor="db-robots" help={<>The sitemap line, and rules blocking <code>/admin</code> and <code>/api</code>, are always added for you.</>}>
           <textarea id="db-robots" className="db-code" rows={5} value={robots.v.robots} onChange={(e) => robots.set({ robots: e.target.value })} />
@@ -323,6 +324,27 @@ function Seo({ s, n, x }: { s: SiteSettings; n: Notify; x: DashboardExtra }) {
         </Row>
       </Card>
     </>
+  )
+}
+
+function IndexNowCard({ n, count }: { n: Notify; count?: number }) {
+  const [pending, start] = useTransition()
+  return (
+    <Card
+      title="IndexNow"
+      desc="Tells Bing and the search engines that share its index (including the AI search tools built on it) about changes the moment they happen."
+      actions={
+        <button className="wf-btn" disabled={pending} onClick={() => start(async () => {
+          const r = await submitAllToIndexNow()
+          if (r.ok) n(`Sent ${r.count} pages to IndexNow.`)
+          else n(r.error, true)
+        })}>
+          {pending ? 'Sending...' : `Submit all ${count ?? ''} pages`.replace('  ', ' ')}
+        </button>
+      }
+    >
+      <p className="db-note" style={{ margin: 0 }}>Automatic: publishing, unpublishing, renaming or deleting a project or blog post sends its URL straight away. Use the button after big changes to static pages.</p>
+    </Card>
   )
 }
 
