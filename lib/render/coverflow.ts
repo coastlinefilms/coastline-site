@@ -13,12 +13,12 @@ const ARROW =
 const CHEV = (d: string) =>
   `<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`
 
+/** The home carousel shows the projects marked Featured in the CMS, by Sort Order. */
 export function coverflowOrder(projects: Project[]) {
   const featured = projects
     .filter((p) => p.featured)
-    .sort((a, b) => (a.sort_order ?? 1e9) - (b.sort_order ?? 1e9))
-  const rest = projects.filter((p) => !p.featured).sort((a, b) => b.created_at.localeCompare(a.created_at))
-  return [...featured, ...rest]
+    .sort((a, b) => (a.sort_order ?? 1e9) - (b.sort_order ?? 1e9) || a.created_at.localeCompare(b.created_at))
+  return featured.length ? featured : [...projects].sort((a, b) => b.created_at.localeCompare(a.created_at))
 }
 
 const STYLE = `<style>
@@ -28,8 +28,9 @@ const STYLE = `<style>
 .cf-flow__h{margin:0;font-size:64px;line-height:1.05;font-weight:400;letter-spacing:-.02em;color:#E4DDCB}
 .cf-flow__h strong{font-weight:700;color:#FFFFFF}
 .cf-flow__all{display:inline-flex;align-items:center;gap:10px;padding:14px 24px;border-radius:999px;border:1.5px solid #E4DDCB;color:#E4DDCB;font-size:15px;font-weight:500;text-decoration:none;white-space:nowrap;transition:background-color .3s ease,color .3s ease}
+.cf-flow__foot{display:flex;justify-content:center;margin-top:32px}
 .cf-flow__all:hover{background:#E4DDCB;color:#121413}
-.cf-flow__stage{position:relative;height:420px;margin:64px auto 0;max-width:1312px;perspective:1400px;touch-action:pan-y;outline:none}
+.cf-flow__stage{position:relative;height:420px;margin:0 auto;max-width:1312px;perspective:1400px;touch-action:pan-y;outline:none}
 .cf-flow__card{position:absolute;left:50%;top:10px;width:640px;height:400px;margin-left:-320px;border-radius:18px;overflow:hidden;background:#1c1e1d;display:block;text-decoration:none;color:#FFFFFF;box-shadow:0 40px 80px rgba(0,0,0,.5);
   transition:transform .7s cubic-bezier(.22,.61,.36,1),opacity .7s cubic-bezier(.22,.61,.36,1);will-change:transform;-webkit-tap-highlight-color:transparent;-webkit-user-drag:none;user-select:none}
 .cf-flow__card img,.cf-flow__card video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
@@ -59,7 +60,7 @@ const STYLE = `<style>
   .cf-flow{padding:72px 24px}
   .cf-flow__head{flex-direction:column;align-items:flex-start;gap:20px}
   .cf-flow__h{font-size:40px}
-  .cf-flow__stage{margin-top:40px;height:calc(80vw * .625 + 20px)}
+  .cf-flow__stage{height:calc(80vw * .625 + 20px)}
   .cf-flow__card{width:80vw;height:calc(80vw * .625);margin-left:-40vw;border-radius:14px}
   .cf-flow__meta{left:18px;right:18px;bottom:16px}
   .cf-flow__name{font-size:22px}
@@ -139,10 +140,6 @@ export function renderCoverflow(all: Project[]): string {
     .join('')
   return `${STYLE}
 <section class="cf-flow" id="cfFlow" aria-label="Featured work">
-  <div class="cf-flow__head">
-    <h2 class="cf-flow__h">Now <strong>showing</strong></h2>
-    <a href="/work" class="cf-flow__all">View all work ${ARROW}</a>
-  </div>
   <div class="cf-flow__stage" tabindex="0" aria-roledescription="carousel" aria-label="Projects, use the arrow keys to browse">
 ${cards}
   </div>
@@ -151,6 +148,7 @@ ${cards}
     <div class="cf-flow__dots">${dots}</div>
     <button type="button" class="cf-flow__btn" data-next aria-label="Next project">${CHEV('M9 18l6-6-6-6')}</button>
   </div>
+  <div class="cf-flow__foot"><a href="/work" class="cf-flow__all">View all work ${ARROW}</a></div>
 </section>
 ${SCRIPT}`
 }
