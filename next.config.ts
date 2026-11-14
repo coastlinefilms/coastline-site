@@ -1,6 +1,8 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  // Shown in admin > Dashboard > Publishing
+  env: { CF_BUILD_TIME: new Date().toISOString() },
   // Webflow served URLs without trailing slashes; /work/ -> /work
   trailingSlash: false,
   poweredByHeader: false,
@@ -12,6 +14,10 @@ const nextConfig: NextConfig = {
         has: [{ type: 'host', value: '(?<sub>.*)\\.vercel\\.app' }],
         headers: [{ key: 'X-Robots-Tag', value: 'noindex' }],
       },
+      // The admin and API never belong in search results
+      { source: '/admin/:path*', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }] },
+      { source: '/admin', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }] },
+      { source: '/api/:path*', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }] },
       // Self-hosted hero videos
       { source: '/videos/:file*', headers: [{ key: 'Cache-Control', value: 'public, max-age=2592000' }] },
     ]
@@ -20,9 +26,9 @@ const nextConfig: NextConfig = {
     return [
       // The blog index moved from /journal to /blog (Nov 2026); keep old links and rankings
       { source: '/journal', destination: '/blog', statusCode: 301 },
-      // Mirrored from the Webflow hosting redirects so old links keep working after the swap
-      { source: '/muskoka', destination: '/muskoka-toronto-videographer', statusCode: 301 },
-      { source: '/book', destination: 'https://api.leadconnectorhq.com/widget/bookings/coastline-strategy-call', statusCode: 302 },
+      // Other redirects (mirrored from Webflow) live in admin > Dashboard > Publishing
+      { source: '/admin/insights', destination: '/admin/analytics', permanent: false },
+      { source: '/admin/insights/:view', destination: '/admin/analytics/:view', permanent: false },
     ]
   },
 }

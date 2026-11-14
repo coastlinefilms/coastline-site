@@ -5,10 +5,11 @@ import { applyFooter } from './footer'
 import { fillLists } from './lists'
 import { renderProject } from './project'
 import { renderPost } from './blog'
+import { applySettings, getSettings, matchRedirect } from '@/lib/settings'
 
 const PAGES = pages as Record<string, string>
 
-export type Rendered = { status: number; html: string }
+export type Rendered = { status: number; html: string; location?: string }
 
 /** First-party analytics beacon (see public/cf-a.js). */
 function track(html: string, status = 200) {
@@ -62,8 +63,17 @@ function notFound(): Rendered {
   return { status: 404, html: track(rewriteAssets(applyFooter(NOT_FOUND)), 404) }
 }
 
-/** Render any public path exactly as Webflow served it. */
+/** Render a public path: Dashboard redirects first (like Webflow's 301s), then the page, then site settings. */
 export async function renderPath(path: string): Promise<Rendered> {
+  const settings = await getSettings()
+  const r = matchRedirect(path || '/', settings.publishing.redirects)
+  if (r) return { status: r.code, html: '', location: r.to }
+  const out = await renderCore(path)
+  return { ...out, html: applySettings(out.html, settings) }
+}
+
+/** Render any public path exactly as Webflow served it. */
+async function renderCore(path: string): Promise<Rendered> {
   const p = path === '' ? '/' : path
 
   const staticHtml = PAGES[p]

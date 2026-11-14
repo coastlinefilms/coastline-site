@@ -11,7 +11,10 @@ export async function GET(_req: Request, ctx: { params: Promise<{ path?: string[
   const { path } = await ctx.params
   const pathname = '/' + (path ?? []).join('/')
   try {
-    const { status, html } = await renderPath(pathname)
+    const { status, html, location } = await renderPath(pathname)
+    if (location) {
+      return new Response(null, { status, headers: { location, 'cache-control': CACHE } })
+    }
     return new Response(html, {
       status,
       headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': CACHE },

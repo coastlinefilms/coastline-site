@@ -20,7 +20,7 @@ export default function LoginForm() {
       setBusy(false)
       return
     }
-    window.location.href = '/admin/journal'
+    window.location.href = '/admin/dashboard'
   }
 
   return (

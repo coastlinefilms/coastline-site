@@ -3,12 +3,10 @@
  *  - Neue Montreal served under every family name the pages use
  *    ("Neuemontreal", "Neue Montreal", "neue-montreal"), so no text falls back
  *  - only the Google fonts a page actually uses (Space Mono, Poppins, Inter/Fraunces)
- *  - Google Analytics (GA4) on every page
  *  - a default share image where a page has none
  *  - drops Webflow leftovers: the WebFont loader, the CDN preconnect, loader preloads
  */
 
-const GA_ID = 'G-REZQBCVZTP'
 const DEFAULT_OG =
   'https://cdn.prod.website-files.com/69ecc5fb6fc18880aa9fc6c6/6a97104131eb4940181760f8_Graph.jpg'
 
@@ -64,8 +62,6 @@ html body .journal-container:has(>.cf-kw)>:not(.journal-h1):not(.cf-kw){order:3}
 @media(max-width:767px){html body .lp-hero__inner>.lp-eyebrow,html body .journal-container>.cf-kw{font-size:16px;margin-top:14px}}
 </style>`
 
-const GA = `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ID}"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');</script>`
 
 function googleFonts(html: string): string {
   const fams: string[] = []
@@ -92,9 +88,9 @@ export function applyHead(html: string): string {
     .replace(/<link rel="preload" as="image" href="[^"]*cf-loader-[^"]*"[^>]*>\s*/g, '')
 
   let add = FONT_BLOCK + '\n' + googleFonts(html)
-  if (!html.includes(`gtag/js?id=${GA_ID}`)) add += '\n' + GA
+  // Google Analytics, Meta Pixel and verification tags come from Dashboard > Integrations (lib/settings.ts)
   if (!/property="og:image"/.test(head)) {
-    add += `\n<meta property="og:image" content="${DEFAULT_OG}">\n<meta name="twitter:image" content="${DEFAULT_OG}">`
+    add += `\n<meta property="og:image" content="${DEFAULT_OG}" data-cf-default>\n<meta name="twitter:image" content="${DEFAULT_OG}" data-cf-default>`
     if (!/name="twitter:card"/.test(head)) add += '\n<meta name="twitter:card" content="summary_large_image">'
   }
   return head + add + '\n' + rest
