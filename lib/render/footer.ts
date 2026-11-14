@@ -11,7 +11,7 @@ const NT = ' target="_blank" rel="noopener"'
 const LOGO = 'https://cdn.prod.website-files.com/69ecc5fb6fc18880aa9fc6c6/69fe6c7428307ab091c9a49f_Coastline%20Films%20copy.png'
 
 const GROUPS: [string, [string, string][]][] = [
-  ['Studio', [['Work', '/work'], ['About', '/about'], ['Field Notes', '/journal'], ['Contact', '/contact']]],
+  ['Explore', [['Work', '/work'], ['About', '/about'], ['Field Notes', '/journal'], ['Contact', '/contact']]],
   ['Services', [['Video Production', '/video-production'], ['Monthly Content Retainer', '/monthly-content-retainer'], ['Growth Partner', '/contact'], ['Cost Calculator', '/video-production-cost-calculator']]],
   ['Locations', [['Squamish &amp; the Sea to Sky', '/squamish-videographer'], ['Vancouver', '/squamish-videographer'], ['Muskoka', '/muskoka-toronto-videographer'], ['Toronto', '/muskoka-toronto-videographer']]],
   ['Clients', [['Reviews', 'https://share.google/Eaw3GzggvqPVFXB1r'], ['Client Portal', 'https://portal.coastlinefilms.ca/login'], ['Book a discovery call', '/contact']]],
