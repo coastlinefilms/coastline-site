@@ -1,8 +1,8 @@
 /**
  * Home work carousel (Nov 2026). Shows the projects marked Featured in the CMS, by
  * Sort Order. A 3D cover flow showing five cards at once: the middle card is sharp,
- * the outer cards turn away, darkened and blurred like the Client Reviews carousel. The active card plays
- * its hover clip on hover; side cards bring themselves forward when clicked.
+ * the outer cards turn away, darkened and blurred like the Client Reviews carousel. The middle card always
+ * plays its hover clip while on screen; side cards bring themselves forward when clicked.
  */
 import type { Project } from '@/lib/types'
 
@@ -99,19 +99,18 @@ const SCRIPT = `<script>
       c.classList.toggle('is-active',o===0);
       c.setAttribute('aria-hidden',a>max?'true':'false');
       c.tabIndex=o===0?0:-1;
-      if(o!==0) stop(c);
     });
     dots.forEach(function(d,k){ d.classList.toggle('is-on',k===i); d.setAttribute('aria-current',k===i?'true':'false'); });
   }
-  function go(k){ i=((k%n)+n)%n; layout(); }
+  /* the middle card always plays its clip while the section is on screen */
+  var inView=false, still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function sync(){ cards.forEach(function(c,k){ if(k===i && inView && !still) play(c); else stop(c); }); }
+  if('IntersectionObserver' in window){ new IntersectionObserver(function(es){ inView=es[0].isIntersecting; sync(); },{threshold:0.15}).observe(stage); } else { inView=true; }
+  function go(k){ i=((k%n)+n)%n; layout(); sync(); }
   function play(c){ var v=c.querySelector('video'); if(!v) return; if(!v.src) v.src=v.dataset.src; var p=v.play(); if(p&&p.catch)p.catch(function(){}); c.classList.add('is-playing'); }
   function stop(c){ var v=c.querySelector('video'); if(v&&!v.paused) v.pause(); c.classList.remove('is-playing'); }
   cards.forEach(function(c,k){
     c.addEventListener('click',function(e){ if(!c.classList.contains('is-active')){ e.preventDefault(); go(k); } });
-    if(canHover){
-      c.addEventListener('mouseenter',function(){ if(c.classList.contains('is-active')) play(c); });
-      c.addEventListener('mouseleave',function(){ stop(c); });
-    }
   });
   /* logos arrive trimmed of padding; size each to the same visual weight whatever its shape */
   [].slice.call(root.querySelectorAll('.cf-flow__logo')).forEach(function(img){
@@ -130,7 +129,7 @@ const SCRIPT = `<script>
   stage.addEventListener('pointerup',function(e){ if(sx===null) return; var dx=e.clientX-sx; sx=null; if(Math.abs(dx)>50){ moved=true; go(i+(dx<0?1:-1)); } });
   stage.addEventListener('click',function(e){ if(moved){ e.preventDefault(); e.stopPropagation(); moved=false; } },true);
   window.addEventListener('resize',layout,{passive:true});
-  layout();
+  layout(); sync();
 })();
 </script>`
 
