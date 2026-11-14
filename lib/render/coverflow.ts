@@ -37,10 +37,11 @@ const STYLE = `<style>
 .cf-flow__card video{opacity:0;transition:opacity .5s ease}
 .cf-flow__card.is-playing video{opacity:1}
 .cf-flow__shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,20,19,0) 45%,rgba(18,20,19,.8) 100%);pointer-events:none}
-.cf-flow__meta{position:absolute;left:28px;right:28px;bottom:24px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;opacity:0;transform:translateY(8px);transition:opacity .45s ease,transform .45s cubic-bezier(.22,.61,.36,1)}
+.cf-flow__meta{position:absolute;left:24px;right:24px;bottom:22px;display:flex;align-items:center;gap:14px;opacity:0;transform:translateY(8px);transition:opacity .45s ease,transform .45s cubic-bezier(.22,.61,.36,1)}
 .cf-flow__card.is-active .cf-flow__meta{opacity:1;transform:none;transition-delay:.15s}
 .cf-flow__client{font-size:14px;line-height:1.4;color:rgba(228,221,203,.75);margin-bottom:6px}
-.cf-flow__name{font-size:30px;line-height:1.1;font-weight:500;color:#FFFFFF}
+.cf-flow__logo{position:static!important;inset:auto!important;width:auto!important;height:22px!important;max-width:110px;object-fit:contain!important;filter:brightness(0) invert(1);flex:none}
+.cf-flow__name{font-size:15px;line-height:1.3;font-weight:500;color:#FFFFFF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cf-flow__type{font-size:14px;color:rgba(228,221,203,.75);white-space:nowrap}
 .cf-flow__card:focus-visible{outline:2px solid #E4DDCB;outline-offset:4px}
 .cf-flow__nav{display:flex;justify-content:center;align-items:center;gap:24px;margin-top:40px}
@@ -63,7 +64,8 @@ const STYLE = `<style>
   .cf-flow__stage{height:calc(80vw * .625 + 20px)}
   .cf-flow__card{width:80vw;height:calc(80vw * .625);margin-left:-40vw;border-radius:14px}
   .cf-flow__meta{left:18px;right:18px;bottom:16px}
-  .cf-flow__name{font-size:22px}
+  .cf-flow__name{font-size:14px}
+  .cf-flow__logo{height:18px!important}
   .cf-flow__type{display:none}
   .cf-flow__nav{margin-top:28px}
 }
@@ -131,7 +133,7 @@ export function renderCoverflow(all: Project[]): string {
       return `<a href="/projects/${esc(p.slug)}" class="cf-flow__card" draggable="false" aria-label="${esc(p.client || p.name)}: ${esc(p.name)}">
   <img src="${esc(p.thumbnail?.url)}" alt="${esc(p.thumbnail?.alt ?? p.name)}" loading="lazy" decoding="async" draggable="false">${video}
   <span class="cf-flow__shade"></span>
-  <span class="cf-flow__meta"><span><span class="cf-flow__client" style="display:block">${esc(p.client)}</span><span class="cf-flow__name" style="display:block">${esc(p.name)}</span></span>${p.project_type ? `<span class="cf-flow__type">${esc(p.project_type)}</span>` : ''}</span>
+  <span class="cf-flow__meta">${p.logo?.url ? `<img class="cf-flow__logo" src="${esc(p.logo.url)}" alt="${esc(p.client)}" draggable="false">` : ''}<span class="cf-flow__name">${esc(p.name)}</span></span>
 </a>`
     })
     .join('\n')
