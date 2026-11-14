@@ -56,7 +56,18 @@ const STYLE = `<style>
   }
 
   /* page directory */
-  .footer-006-cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; width: 100%; margin-top: 48px; text-align: center; }
+  .footer-006-main { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 48px 32px; width: 100%; text-align: center; }
+  .footer-006-brand { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; }
+  /* wide screens: Studio + Services | logo + socials | Locations + Clients, one shared top line */
+  @media (min-width: 1240px) {
+    .footer-006-main { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: 32px; }
+    .footer-006-brand { grid-column: 3; grid-row: 1; padding: 0 24px; }
+    .footer-006-main > .footer-006-col:nth-of-type(1) { grid-column: 1; grid-row: 1; }
+    .footer-006-main > .footer-006-col:nth-of-type(2) { grid-column: 2; grid-row: 1; }
+    .footer-006-main > .footer-006-col:nth-of-type(3) { grid-column: 4; grid-row: 1; }
+    .footer-006-main > .footer-006-col:nth-of-type(4) { grid-column: 5; grid-row: 1; }
+    .footer-006-socials { gap: 16px 28px; }
+  }
   .footer-006-col-h { margin: 0 0 12px; font-family: Neuemontreal, 'Neue Montreal', sans-serif; font-size: 11px; font-weight: 500; line-height: 1.4; letter-spacing: 0.14em; text-transform: uppercase; color: #7A736A; }
   .footer-006-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; }
   .footer-006-col a { font-family: Neuemontreal, 'Neue Montreal', sans-serif; font-size: 13px; font-weight: 500; line-height: 1.4; letter-spacing: 0; color: rgba(228,221,203,0.55); text-decoration: none; transition: color 0.4s ease; }
@@ -71,14 +82,14 @@ const STYLE = `<style>
 
   @media (max-width: 991px) {
     .footer-006 { padding: 48px 32px 28px; }
-    .footer-006-cols { gap: 16px; margin-top: 40px; }
+    .footer-006-main { gap: 40px 16px; }
     .footer-006-bottom { margin-top: 40px; }
   }
   @media (max-width: 600px) {
     .footer-006 { padding: 40px 24px 24px; }
     .footer-006-logo { height: 48px; }
     .footer-006-socials { gap: 16px 24px; margin-top: 24px; }
-    .footer-006-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 16px; margin-top: 32px; }
+    .footer-006-main { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 16px; }
     .footer-006-bottom { flex-direction: column; text-align: center; margin-top: 24px; gap: 8px; }
   }
   @media (prefers-reduced-motion: reduce) {
@@ -106,11 +117,13 @@ const COLS = GROUPS.map(([title, links]) =>
 
 const MARKUP = `<footer class="footer-006">
   <div class="footer-006-inner">
-    <a href="https://www.coastlinefilms.ca/" class="footer-006-logo-link" aria-label="Coastline Films home"><img class="footer-006-logo" src="${LOGO}" alt="Coastline Films"></a>
-    <div class="footer-006-socials">
-      ${SOCIALS}
-    </div>
-    <div class="footer-006-cols">
+    <div class="footer-006-main">
+      <div class="footer-006-brand">
+        <a href="https://www.coastlinefilms.ca/" class="footer-006-logo-link" aria-label="Coastline Films home"><img class="footer-006-logo" src="${LOGO}" alt="Coastline Films"></a>
+        <div class="footer-006-socials">
+          ${SOCIALS}
+        </div>
+      </div>
       ${COLS}
     </div>
     <div class="footer-006-bottom">
