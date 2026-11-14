@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useMemo, useState } from 'react'
 import { IconChevronDown } from './icons'
+import { VIEWS } from './nav'
 
 /* ---------------- types ---------------- */
 
@@ -22,13 +23,6 @@ type Data = {
   first_event: string | null
 }
 
-export const VIEWS = {
-  overview: 'Site overview',
-  pages: 'Pages',
-  events: 'Events',
-  sources: 'Traffic sources',
-  audience: 'Audience',
-} as const
 
 const RANGE_LABELS: Record<string, string> = {
   '24h': 'Last 24 hours', '7d': 'Last 7 days', '30d': 'Last 30 days', '90d': 'Last 90 days', '365d': 'Last 12 months',

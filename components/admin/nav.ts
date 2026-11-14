@@ -28,6 +28,16 @@ export const DASHBOARD_SECTIONS = [
 
 export type SectionSlug = (typeof DASHBOARD_SECTIONS)[number]['slug']
 
+// Analytics views. Kept here (not in the 'use client' Insights component) so server pages can read it:
+// a plain object imported from a client module arrives on the server as a placeholder, which made every view 404.
+export const VIEWS = {
+  overview: 'Site overview',
+  pages: 'Pages',
+  events: 'Events',
+  sources: 'Traffic sources',
+  audience: 'Audience',
+} as const
+
 export const ANALYTICS_VIEWS = [
   { href: '/admin/analytics', name: 'Site overview' },
   { href: '/admin/analytics/pages', name: 'Pages' },

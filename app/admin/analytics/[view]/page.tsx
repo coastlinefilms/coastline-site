@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
-import Insights, { VIEWS } from '@/components/admin/Insights'
+import Insights from '@/components/admin/Insights'
+import { VIEWS } from '@/components/admin/nav'
 import { loadInsights } from '../data'
 
 export default async function InsightsView({ params, searchParams }: {
@@ -7,7 +8,7 @@ export default async function InsightsView({ params, searchParams }: {
   searchParams: Promise<{ range?: string; device?: string }>
 }) {
   const { view } = await params
-  if (!(view in VIEWS) || view === 'overview') notFound()
+  if (!Object.hasOwn(VIEWS, view) || view === 'overview') notFound()
   const r = await loadInsights(await searchParams)
   return <Insights view={view as keyof typeof VIEWS} {...r} />
 }
