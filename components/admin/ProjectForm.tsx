@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { deleteItem, saveProject } from '@/app/admin/actions'
 import { PROJECT_TYPES, type Img, type Project } from '@/lib/types'
 import {
-  EditorHeader, ImageField, NumberField, Section, Select, SlugField, Switch, Text, Toast, useEditorKeys,
+  EditorHeader, ImageField, NumberField, Section, Select, SlugField, Switch, Text, Toast, useEditorKeys, useToast,
 } from './fields'
 
 const CREDITS = [
@@ -16,17 +16,13 @@ export default function ProjectForm({ project }: { project: Partial<Project> }) 
   const router = useRouter()
   const [p, setP] = useState<Partial<Project>>(project)
   const [saved, setSaved] = useState(JSON.stringify(project))
-  const [toast, setToast] = useState<{ msg: string; err?: boolean }>({ msg: '' })
+  const [toast, flash] = useToast()
   const [pending, start] = useTransition()
   const status = (p.status ?? 'draft') as 'draft' | 'published'
   const dirty = JSON.stringify(p) !== saved
   const set = <K extends keyof Project>(k: K, v: Project[K] | null) => setP((s) => ({ ...s, [k]: v }))
   const gallery: Img[] = Array.from({ length: 6 }, (_, i) => p.gallery?.[i] ?? null)
 
-  const flash = (msg: string, err = false) => {
-    setToast({ msg, err })
-    setTimeout(() => setToast({ msg: '' }), 3200)
-  }
 
   const save = useCallback((next: 'draft' | 'published' = status) => {
     start(async () => {
@@ -58,7 +54,7 @@ export default function ProjectForm({ project }: { project: Partial<Project> }) 
           { label: 'Save as draft', onClick: () => save('draft'), hidden: status === 'published' },
           { label: 'View live project', onClick: () => window.open(`/projects/${p.slug}`, '_blank'), hidden: status !== 'published' },
           { label: 'Unpublish', onClick: () => confirm('Take this project off the site? Its URL will return a 404.') && save('draft'), hidden: status !== 'published' },
-          { label: 'Delete item', danger: true, hidden: !p.id, onClick: () => confirm('Delete this project permanently? This cannot be undone.') && start(async () => { await deleteItem('project', p.id!) }) },
+          { label: 'Delete item', danger: true, hidden: !p.id, onClick: () => confirm('Delete this project permanently? This cannot be undone.') && start(async () => { const r = await deleteItem('project', p.id!); if (r && !r.ok) flash(r.error, true) }) },
         ]}
       />
       <div className="wf-editor-body">

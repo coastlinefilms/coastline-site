@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { deleteItem, savePost } from '@/app/admin/actions'
 import { BLOG_CATEGORIES, type Post } from '@/lib/types'
 import {
-  DateField, EditorHeader, ImageField, MultiRef, NumberField, RichText, Section, Select, SlugField, Switch, Text, Toast, useEditorKeys,
+  DateField, EditorHeader, ImageField, MultiRef, NumberField, RichText, Section, Select, SlugField, Switch, Text, Toast, useEditorKeys, useToast,
 } from './fields'
 
 export default function PostForm({ post, projects, posts }: {
@@ -16,16 +16,12 @@ export default function PostForm({ post, projects, posts }: {
   const router = useRouter()
   const [p, setP] = useState<Partial<Post>>(post)
   const [saved, setSaved] = useState(JSON.stringify(post))
-  const [toast, setToast] = useState<{ msg: string; err?: boolean }>({ msg: '' })
+  const [toast, flash] = useToast()
   const [pending, start] = useTransition()
   const status = (p.status ?? 'draft') as 'draft' | 'published'
   const dirty = JSON.stringify(p) !== saved
   const set = <K extends keyof Post>(k: K, v: Post[K] | null) => setP((s) => ({ ...s, [k]: v }))
 
-  const flash = (msg: string, err = false) => {
-    setToast({ msg, err })
-    setTimeout(() => setToast({ msg: '' }), 3200)
-  }
 
   const save = useCallback((next: 'draft' | 'published' = status) => {
     start(async () => {
@@ -56,7 +52,7 @@ export default function PostForm({ post, projects, posts }: {
           { label: 'Save as draft', onClick: () => save('draft'), hidden: status === 'published' },
           { label: 'View live post', onClick: () => window.open(`/blog/${p.slug}`, '_blank'), hidden: status !== 'published' },
           { label: 'Unpublish', onClick: () => confirm('Take this post off the site? Its URL will return a 404.') && save('draft'), hidden: status !== 'published' },
-          { label: 'Delete item', danger: true, hidden: !p.id, onClick: () => confirm('Delete this post permanently? This cannot be undone.') && start(async () => { await deleteItem('post', p.id!) }) },
+          { label: 'Delete item', danger: true, hidden: !p.id, onClick: () => confirm('Delete this post permanently? This cannot be undone.') && start(async () => { const r = await deleteItem('post', p.id!); if (r && !r.ok) flash(r.error, true) }) },
         ]}
       />
       <div className="wf-editor-body">
@@ -79,7 +75,7 @@ export default function PostForm({ post, projects, posts }: {
             <DateField label="Publish Date" value={p.publish_date} onChange={(v) => set('publish_date', v)} />
             <Text label="Author" help="Who wrote the post. Defaults to Coastline Films." value={p.author} onChange={(v) => set('author', v)} />
             <NumberField label="Reading Time Minutes" help="Estimated minutes to read - integer only" value={p.reading_time_minutes} onChange={(v) => set('reading_time_minutes', v)} />
-            <Switch label="Featured on the Journal" help="Shows this post in the Featured slot at the top of /blog. Only one post can be featured." checked={!!p.journal_featured} onChange={(v) => set('journal_featured', v)} />
+            <Switch label="Featured on the blog" help="Shows this post in the Featured slot at the top of /blog. Only one post can be featured." checked={!!p.journal_featured} onChange={(v) => set('journal_featured', v)} />
           </Section>
 
           <Section title="Section 1 (Opening + Image 1)" desc="First 2 paragraphs of the article, followed by the first inline image and optional caption">

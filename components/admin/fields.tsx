@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { upload } from '@vercel/blob/client'
 import type { Img } from '@/lib/types'
 import {
@@ -413,15 +413,51 @@ export function Toast({ msg, err }: { msg: string; err?: boolean }) {
   return <div className={`wf-toast ${err ? 'err' : ''}`}>{msg}</div>
 }
 
+/**
+ * Unsaved-changes guard, like Webflow's: warns on reload/close, and on in-app links
+ * (sidebar, top bar, back arrow), which never fire beforeunload.
+ */
+export function useLeaveGuard(isDirty: () => boolean) {
+  useEffect(() => {
+    const before = (e: BeforeUnloadEvent) => { if (isDirty()) { e.preventDefault(); e.returnValue = '' } }
+    const click = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+      const a = (e.target as Element | null)?.closest?.('a[href]') as HTMLAnchorElement | null
+      if (!a || a.target === '_blank' || a.hasAttribute('download')) return
+      const url = new URL(a.href, location.href)
+      if (url.origin !== location.origin || (url.pathname === location.pathname && url.search === location.search)) return
+      if (isDirty() && !confirm('You have unsaved changes. Leave without saving?')) { e.preventDefault(); e.stopPropagation() }
+    }
+    window.addEventListener('beforeunload', before)
+    document.addEventListener('click', click, true)
+    return () => { window.removeEventListener('beforeunload', before); document.removeEventListener('click', click, true) }
+  }, [isDirty])
+}
+
+/** Short-lived toast message; a new message replaces the old one and restarts its timer. */
+export function useToast() {
+  const [toast, setToast] = useState<{ msg: string; err?: boolean }>({ msg: '' })
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const flash = useCallback((msg: string, err = false) => {
+    if (timer.current) clearTimeout(timer.current)
+    setToast({ msg, err })
+    timer.current = setTimeout(() => setToast({ msg: '' }), err ? 6000 : 3200)
+  }, [])
+  useEffect(() => () => { if (timer.current) clearTimeout(timer.current) }, [])
+  return [toast, flash] as const
+}
+
 /** Warn before leaving with unsaved changes, and save on Cmd/Ctrl+S. */
 export function useEditorKeys(dirty: boolean, onSave: () => void) {
+  const dirtyRef = useRef(dirty)
+  dirtyRef.current = dirty
+  const isDirty = useCallback(() => dirtyRef.current, [])
+  useLeaveGuard(isDirty)
   useEffect(() => {
-    const before = (e: BeforeUnloadEvent) => { if (dirty) { e.preventDefault(); e.returnValue = '' } }
-    const keys = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); onSave() } }
-    window.addEventListener('beforeunload', before)
+    const keys = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') { e.preventDefault(); if (dirtyRef.current) onSave() } }
     window.addEventListener('keydown', keys)
-    return () => { window.removeEventListener('beforeunload', before); window.removeEventListener('keydown', keys) }
-  }, [dirty, onSave])
+    return () => window.removeEventListener('keydown', keys)
+  }, [onSave])
 }
 
 /* ---------------- time helpers (Toronto) ---------------- */

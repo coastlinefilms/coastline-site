@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createBackup, deleteBackup, restoreBackup, saveSettings } from '@/app/admin/dashboard/actions'
 import { matchRedirect, type Redirect, type SettingsKey, type SiteSettings } from '@/lib/settings'
 import { DASHBOARD_SECTIONS, type SectionSlug } from './nav'
-import { ImageField, Toast } from './fields'
+import { ImageField, Toast, useLeaveGuard } from './fields'
 import { IconChevronDown, IconDownload, IconExternal, IconPlus, IconTrash } from './icons'
 import type { DomainStatus } from '@/app/admin/dashboard/data'
 
@@ -136,7 +136,7 @@ function General({ s, n }: { s: SiteSettings; n: Notify }) {
         </Row>
       </Card>
       <Card title="Localize" group={loc}>
-        <Row label="Time zone" htmlFor="db-tz" help="Used for dates across this admin, like backup times and when settings were saved.">
+        <Row label="Time zone" htmlFor="db-tz" help="Used for times shown in the Dashboard, like backups and when settings were last saved. Blog dates on the live site stay in Eastern time.">
           <div className="wf-select">
             <select id="db-tz" value={loc.v.timeZone} onChange={(e) => loc.set({ timeZone: e.target.value })}>
               {zones.map((z) => <option key={z} value={z}>{z.replace(/_/g, ' ')}</option>)}
@@ -489,6 +489,8 @@ function CustomCode({ s, n }: { s: SiteSettings; n: Notify }) {
 
 /* ---------------- shell ---------------- */
 
+const hasUnsaved = () => !!document.querySelector('.db-card .wf-btn.blue:not(:disabled)')
+
 export default function Dashboard({ section, settings, extra }: { section: SectionSlug; settings: SiteSettings; extra: DashboardExtra }) {
   const router = useRouter()
   const [toast, setToast] = useState<{ msg: string; err?: boolean } | null>(null)
@@ -499,12 +501,8 @@ export default function Dashboard({ section, settings, extra }: { section: Secti
     return () => clearTimeout(t)
   }, [toast])
 
-  // Warn before leaving with unsaved changes (any card with a blue Save button)
-  useEffect(() => {
-    const h = (e: BeforeUnloadEvent) => { if (document.querySelector('.db-card .wf-btn.blue:not(:disabled)')) e.preventDefault() }
-    window.addEventListener('beforeunload', h)
-    return () => window.removeEventListener('beforeunload', h)
-  }, [])
+  // Warn before leaving with unsaved changes (any card whose Save button is lit)
+  useLeaveGuard(hasUnsaved)
 
   const title = DASHBOARD_SECTIONS.find((x) => x.slug === section)?.name ?? 'Settings'
   return (
