@@ -111,6 +111,32 @@ var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isInter
     return `<img class="cf-test-img" loading="lazy" decoding="async" srcset="${srcset(url, [828, 1200])}, ${url} 2400w" sizes="${PHONE} 100vw, 2400px" src="${url}"`
   })
 
+  // 3b. Other images that load early on a phone at far more than they display at.
+  //     The `2400px` desktop size makes desktop keep choosing the original file.
+  const phoneImg = (pattern: RegExp, widths: number[], phoneSize: string) => {
+    out = out.replace(pattern, (tag: string, pre: string, url: string) => {
+      if (!BLOB.test(url) || /\ssrcset=/.test(tag)) return tag
+      return `${pre}srcset="${srcset(url, widths)}, ${url} 2400w" sizes="${PHONE} ${phoneSize}, 2400px" src="${url}"`
+    })
+  }
+  // site logo (nav, mobile menu, footer): a 600px PNG shown ~120px wide
+  phoneImg(/(<img\b[^>]*?)src="(https:\/\/[^"]+_Coastline%20Films%20copy\.png)"/g, [256, 384], '130px')
+  // testimonial avatars: large photos shown as ~56px circles
+  phoneImg(/(<div class="cf-test-avatar">\s*<img\b[^>]*?)src="(https:\/\/[^"]+)"/g, [128, 256], '64px')
+  // Work cover flow cards
+  phoneImg(/(<img class="cf-flow__media"\s+)src="(https:\/\/[^"]+)"/g, [640, 828, 1200], '80vw')
+
+  // 3c. The first-visit intro animation paints the full-size texture too; phones get the smaller copy
+  if (out.includes('id="cfl"') && out.includes(TEXTURE)) {
+    const tex = opt(TEXTURE, 1200, false)
+    head += `<style id="cf-phone-intro">@media${PHONE}{html:root .cfl__tex{background-image:url("${tex}")}}</style>`
+    // the intro script preloads its texture from a hard-coded Webflow CDN path; swap it on phones
+    out = out.replace(
+      /TEX=CDN\+'6a12480e77f832e5f99643e1_webtexture1\.webp'/,
+      `TEX=(window.matchMedia&&matchMedia('${PHONE}').matches)?'${tex}':CDN+'6a12480e77f832e5f99643e1_webtexture1.webp'`,
+    )
+  }
+
   if (head) out = before(out, '</head>', head)
   if (tail) out = before(out, '</body>', tail)
   return out
