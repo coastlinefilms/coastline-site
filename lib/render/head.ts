@@ -51,7 +51,7 @@ ${FONT_CSS}
 </style>
 <style id="cf-no-eyebrows">
 /* No eyebrow labels above headings (Nov 2026). Location/type meta on case cards stays: it carries local SEO. */
-html body :is(.cf-eyebrow,.cf-hero__eyebrow,.lp-eyebrow,.sv-eyebrow,.cfw-eyebrow,.cfw-cta__eyebrow,.cfw-cta__label,.ab-tag,.ab-label__name,.ab-mini,.cf-faq__label,.smsx-eyebrow,.journal-eyebrow,.journal-section-label,.post-eyebrow,.post-calc-eyebrow,.post-cta-eyebrow,.cc-ty-eyebrow,.lp-svc__num,.work-client){display:none!important}
+html body :is(.cf-eyebrow,.cf-hero__eyebrow,.lp-eyebrow,.sv-eyebrow,.cfw-eyebrow,.cfw-cta__eyebrow,.cfw-cta__label,.ab-tag,.ab-label__name,.ab-mini,.ab-label__num,.cf-faq__label,.smsx-eyebrow,.journal-eyebrow,.journal-section-label,.post-eyebrow,.post-calc-eyebrow,.post-cta-eyebrow,.cc-ty-eyebrow,.lp-svc__num,.work-client){display:none!important}
 </style>`
 
 const GA = `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ID}"></script>
