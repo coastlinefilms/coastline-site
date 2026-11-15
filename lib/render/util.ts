@@ -55,7 +55,11 @@ export function setHead($: CheerioAPI, f: HeadFields) {
 }
 
 /** Bind an image field to an <img>, Webflow-style. Removes the element when empty unless keepEmpty. */
-export function bindImg(el: Cheerio<AnyNode>, img: Img, opts: { alt?: string | null; keepEmpty?: boolean } = {}) {
+export function bindImg(
+  el: Cheerio<AnyNode>,
+  img: Img,
+  opts: { alt?: string | null; keepEmpty?: boolean; fallbackAlt?: string | null } = {},
+) {
   if (!img?.url) {
     if (opts.keepEmpty) {
       el.attr('src', '').removeAttr('srcset').removeAttr('sizes')
@@ -68,7 +72,8 @@ export function bindImg(el: Cheerio<AnyNode>, img: Img, opts: { alt?: string | n
   }
   el.removeClass('w-dyn-bind-empty')
   el.attr('src', img.url)
-  const alt = opts.alt !== undefined ? opts.alt : img.alt
+  const alt = (opts.alt !== undefined ? opts.alt : img.alt) || opts.fallbackAlt
+  // Search engines flag empty alt text (Bing Site Scan): fall back to a description built from the item
   if (alt != null && alt !== '') el.attr('alt', alt)
   else el.attr('alt', '')
   if (img.srcset) {

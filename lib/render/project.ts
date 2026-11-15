@@ -29,10 +29,11 @@ export function renderProject(p: Project, all: Project[] = []): string {
   $('html').attr('data-wf-item-slug', p.slug)
 
   // Hero: logo, client eyebrow, title, header image
-  bindImg($('.section-13 .image-10').first(), p.logo)
+  const who = p.client || p.name
+  bindImg($('.section-13 .image-10').first(), p.logo, { fallbackAlt: `${who} logo` })
   $('.section-13 .cf-hero__eyebrow').first().text(p.client ?? '')
   $('.section-13 h1.cf-title').first().text(p.name)
-  bindImg($('.section-13 .image-9').first(), p.header)
+  bindImg($('.section-13 .image-9').first(), p.header, { fallbackAlt: `${who}: ${p.name}, filmed by Coastline Films` })
 
   // Brief
   $('.section-14 > div').eq(1).text(p.brief ?? '')
@@ -48,7 +49,7 @@ export function renderProject(p: Project, all: Project[] = []): string {
 
   // Gallery: 6 fixed slots (1 big, 2 small, 3 thirds)
   const imgs = $('.cf-gallery-grid img').toArray()
-  imgs.forEach((el, i) => bindImg($(el), p.gallery?.[i] ?? null))
+  imgs.forEach((el, i) => bindImg($(el), p.gallery?.[i] ?? null, { fallbackAlt: `${who}: ${p.name}, still ${i + 1}` }))
   if (!(p.gallery ?? []).some((g) => g?.url)) $('section.section-15').remove()
 
   // Credits (empty ones are hidden client-side by the embed's own script)
@@ -76,9 +77,10 @@ const esc = (v: string | null | undefined) =>
 
 function nextAndCta(next: Project | null): string {
   const img = next?.thumbnail?.url ?? next?.header?.url
+  const imgAlt = (next?.thumbnail?.url ? next?.thumbnail?.alt : next?.header?.alt) || (next ? `${next.client ? `${next.client}: ` : ''}${next.name}` : '')
   const card = next
     ? `<a class="cf-next__card" href="/projects/${esc(next.slug)}" aria-label="Next project: ${esc(next.client || next.name)}, ${esc(next.name)}">
-      ${img ? `<img src="${esc(img)}" alt="" loading="lazy">` : ''}
+      ${img ? `<img src="${esc(img)}" alt="${esc(imgAlt)}" loading="lazy">` : ''}
       <span class="cf-next__shade"></span>
       <span class="cf-next__text"><span class="cf-next__h">Next <strong>project</strong></span><span class="cf-next__name">${esc(next.client ? `${next.client}: ${next.name}` : next.name)}</span></span>
       <span class="cf-next__go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
