@@ -6,6 +6,7 @@ import { applyFooter } from './footer'
 import { fillLists } from './lists'
 import { renderProject } from './project'
 import { renderPost } from './blog'
+import { addToHead, projectVideoJsonLd } from './video-schema'
 import { applySettings, getSettings, matchRedirect } from '@/lib/settings'
 
 const PAGES = pages as Record<string, string>
@@ -59,6 +60,8 @@ const NOT_FOUND = (() => {
   return (base.slice(0, a) + body + base.slice(b + '</section>'.length))
     .replace(/<title>[\s\S]*?<\/title>/, '<title>Page not found | Coastline Films</title>')
     .replace(/<link href="[^"]*" rel="canonical"\/?>/, '')
+    // the shell carried the Privacy page's description; give the 404 its own
+    .replace(/<meta content="[^"]*" name="description"\/?>/, '<meta content="This page has moved or never existed. See the work or book a call with Coastline Films." name="description"/>')
     .replace('<meta charset="utf-8"/>', '<meta charset="utf-8"/><meta name="robots" content="noindex"/>')
 })()
 
@@ -95,7 +98,9 @@ async function renderCore(path: string): Promise<Rendered> {
     const slug = decodeURIComponent(m[2])
     if (m[1] === 'projects') {
       const [proj, all] = await Promise.all([getProject(slug), listProjects()])
-      return proj ? { status: 200, html: track(rewriteAssets(applyFooter(renderProject(proj, all)))) } : notFound()
+      if (!proj) return notFound()
+      const videoLd = await projectVideoJsonLd(proj)
+      return { status: 200, html: track(rewriteAssets(applyFooter(addToHead(renderProject(proj, all), videoLd)))) }
     }
     const post = await getPost(slug)
     return post ? { status: 200, html: track(rewriteAssets(applyFooter(renderPost(post)))) } : notFound()

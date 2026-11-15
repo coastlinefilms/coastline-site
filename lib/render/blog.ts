@@ -6,8 +6,23 @@ import { SITE, bindImg, bindText, formatDate, setHead } from './util'
 const LOGO =
   'https://cdn.prod.website-files.com/69ecc5fb6fc18880aa9fc6c6/69fe6c7428307ab091c9a49f_Coastline%20Films%20copy.png'
 
+/**
+ * Author for BlogPosting. A post bylined to Jacob points at the Person node every page
+ * already declares (#jacob-degrace), so assistants tie the writing to a real person
+ * (Nov 2026 AI visibility audit). Anything else stays the Organization.
+ */
+function authorJson(author: string | null): string {
+  const name = (author ?? '').trim()
+  if (/^jacob degrace$/i.test(name)) {
+    return `{"@type": "Person", "@id": "${SITE}/#jacob-degrace", "name": "Jacob DeGrace", "url": "${SITE}/about"}`
+  }
+  if (name && !/^coastline films$/i.test(name)) {
+    return `{"@type": "Person", "name": ${JSON.stringify(name).replace(/</g, '\\u003c')}}`
+  }
+  return `{"@type": "Organization", "@id": "${SITE}/#organization", "name": "Coastline Films", "url": "${SITE}"}`
+}
+
 function blogPostingJson(p: Post, canonical: string, image: string) {
-  // Byte-compatible with the Webflow head embed (same keys, order and layout)
   const j = (v: unknown) => JSON.stringify(v ?? '').replace(/</g, '\\u003c')
   return `
 {
@@ -16,8 +31,8 @@ function blogPostingJson(p: Post, canonical: string, image: string) {
   "headline": ${j(p.name)},
   "description": ${j(p.excerpt)},
   "image": ${j(image)},
-  "author": {"@type": "Organization", "name": "Coastline Films", "url": "${SITE}"},
-  "publisher": {"@type": "Organization", "name": "Coastline Films", "logo": {"@type": "ImageObject", "url": "${LOGO}"}},
+  "author": ${authorJson(p.author)},
+  "publisher": {"@type": "Organization", "@id": "${SITE}/#organization", "name": "Coastline Films", "logo": {"@type": "ImageObject", "url": "${LOGO}"}},
   "datePublished": ${j(p.publish_date)},
   "dateModified": ${j(p.published_at ?? p.publish_date)},
   "mainEntityOfPage": {"@type": "WebPage", "@id": ${j(canonical)}},

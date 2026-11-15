@@ -119,7 +119,7 @@ function nextAndCta(next: Project | null): string {
 ${card ? `<section class="cf-next">${card}</section>` : ''}
 <section class="cf-cta">
   <h2 class="cf-cta__h">Have a project in <strong>mind?</strong></h2>
-  <p class="cf-cta__p">Free 30-minute discovery call. No deck, no pitch. We reply within one business day.</p>
+  <p class="cf-cta__p">Free 15-minute discovery call. No deck, no pitch. We reply within one business day.</p>
   <div class="cf-cta__btns"><a class="cf-cta__btn is-solid" href="/contact">Book a call <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 11.5l7-7M5.5 4.5h6v6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a class="cf-cta__btn is-line" href="/work">See all work</a></div>
 </section>`
 }
