@@ -78,6 +78,24 @@ html body .journal-container>.journal-h1{order:1}
 html body .journal-container>.cf-kw{display:block!important;order:2;margin:18px 0 0;font-size:18px;line-height:1.4;font-weight:500;letter-spacing:0;text-transform:none;color:#E4DDCB}
 html body .journal-container:has(>.cf-kw)>:not(.journal-h1):not(.cf-kw){order:3}
 @media(max-width:767px){html body .lp-hero__inner>.lp-eyebrow,html body .journal-container>.cf-kw{font-size:16px;margin-top:14px}}
+</style>
+<style id="cf-phone-fit">
+/* Home page on phones (Nov 2026): stacked Webflow paddings left 160-210px gaps between sections; one steady 70-100px rhythm instead */
+@media(max-width:767px){
+html body:has(.why-section) .section-5{padding-bottom:0!important}
+html body:has(.why-section) .why-section{padding-bottom:40px!important}
+html body:has(.why-section) .cf-flow{padding-top:48px!important;padding-bottom:56px!important}
+html body:has(.why-section) .sv{padding-top:64px!important;padding-bottom:80px!important}
+html body:has(.why-section) :is(.section-3,.cf-test){padding-bottom:0!important}
+html body:has(.why-section) .section-9{padding-top:0!important;padding-bottom:0!important}
+html body:has(.why-section) .cfh-inner{padding-top:72px!important;padding-bottom:72px!important}
+html body:has(.why-section) footer.footer{padding-top:0!important}
+html body:has(.why-section) .footer-006{padding-top:24px!important}
+}
+/* No tilt or magnetic effects on touch screens: a tap fires a mouse move and left icons and buttons stuck at an angle */
+@media(hover:none),(pointer:coarse){
+html body :is([data-f-tilt],[data-f-tilt-icon],[data-f-tilt-froth],.cf-btn,.cf-nav__cta){transform:none!important}
+}
 </style>`
 
 

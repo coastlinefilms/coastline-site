@@ -146,7 +146,14 @@ function swapFooter(html: string): string {
   const innerEnd = html.indexOf('</footer>', inner)
   const script = html.indexOf('<script>', innerEnd)
   if (innerEnd === -1 || script === -1) return html
-  return html.slice(0, styleStart) + STYLE + '\n\n' + MARKUP + '\n' + html.slice(innerEnd + '</footer>'.length)
+  // the embed's tilt script listened to every mouse move, including the ones a tap fires on phones
+  const tail = html
+    .slice(innerEnd + '</footer>'.length)
+    .replace(
+      "document.addEventListener('mousemove', onMove, { passive: true });",
+      "if (!window.matchMedia('(hover: none), (pointer: coarse)').matches) document.addEventListener('mousemove', onMove, { passive: true });",
+    )
+  return html.slice(0, styleStart) + STYLE + '\n\n' + MARKUP + '\n' + tail
 }
 
 /** Applies the site chrome: head fixes (head.ts), the new header (nav.ts) and the new footer. */

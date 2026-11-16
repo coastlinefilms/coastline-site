@@ -83,7 +83,7 @@ var io=new IntersectionObserver(function(es){for(var i=0;i<es.length;i++){if(es[
       `<style id="cf-phone-bands">@media${PHONE}{` +
       bands.map(sel).join(',') +
       '{background-image:none!important}' +
-      bands.map((c) => `${sel(c)}.cf-bg-in{background-image:url("${opt(BANDS[c], 1200, false)}")!important}`).join('') +
+      bands.map((c) => `${sel(c)}.cf-bg-in{background-image:url("${opt(BANDS[c], 2048, false)}")!important}`).join('') +
       '}</style>'
     tail += `<script>(function(){if(!matchMedia('${PHONE}').matches)return;var els=document.querySelectorAll('${bands
       .map((c) => '.' + c)
@@ -91,18 +91,21 @@ var io=new IntersectionObserver(function(es){for(var i=0;i<es.length;i++){if(es[
 var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('cf-bg-in');io.unobserve(e.target)}})},{rootMargin:'600px 0px'});els.forEach(function(e){io.observe(e)})})();</script>`
   }
 
-  // 1b. Site texture: the Webflow head preloads the full-size file at high priority, which on a phone
-  //     competes with the hero frame. Desktop keeps the preload; phones get a phone-sized copy instead.
+  // 1b. Site texture. Phones ignore background-attachment:fixed, so "cover" sized the texture to the whole
+  //     page (7,000px tall on the home page) and blew a 3840px image up roughly 10x: soft and blurry.
+  //     On phones the texture sits on a screen-sized fixed layer instead (the cost calculator's approach),
+  //     at full resolution: the original is only ~260 KB. Desktop keeps the high-priority preload.
   const TEXTURE = 'https://six9ethpn7gbia9t.public.blob.vercel-storage.com/site/cdn/6a12480e77f832e5f99643e1_webtexture1.webp'
   if (out.includes(TEXTURE)) {
     out = out.replace(
       new RegExp(`<link rel="preload" as="image" href="${TEXTURE.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')}"`, 'g'),
       `<link rel="preload" as="image" media="(min-width:768px)" href="${TEXTURE}"`,
     )
-    const tex = opt(TEXTURE, 1200, false)
     head +=
-      `<style id="cf-phone-texture">@media${PHONE}{html:root body{background-image:url("${tex}")!important}` +
-      `html:root .cf-nav__mobile{background-image:linear-gradient(rgba(18,20,19,.55),rgba(18,20,19,.55)),url("${tex}")}}</style>`
+      `<style id="cf-phone-texture">@media${PHONE}{` +
+      `html:root body,html:root body:has(.lp){background-color:#121413!important;background-image:none!important}` +
+      `html:root body::before{content:"";position:fixed;top:0;left:0;width:100%;height:100vh;height:100lvh;z-index:-1;pointer-events:none;` +
+      `background:#121413 url("${TEXTURE}") center/cover no-repeat}}</style>`
   }
 
   // 3. Testimonial stills: phone-sized copies (desktop still picks the original), loaded lazily
@@ -125,17 +128,6 @@ var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isInter
   phoneImg(/(<div class="cf-test-avatar">\s*<img\b[^>]*?)src="(https:\/\/[^"]+)"/g, [128, 256], '64px')
   // Work cover flow cards
   phoneImg(/(<img class="cf-flow__media"\s+)src="(https:\/\/[^"]+)"/g, [640, 828, 1200], '80vw')
-
-  // 3c. The first-visit intro animation paints the full-size texture too; phones get the smaller copy
-  if (out.includes('id="cfl"') && out.includes(TEXTURE)) {
-    const tex = opt(TEXTURE, 1200, false)
-    head += `<style id="cf-phone-intro">@media${PHONE}{html:root .cfl__tex{background-image:url("${tex}")}}</style>`
-    // the intro script preloads its texture from a hard-coded Webflow CDN path; swap it on phones
-    out = out.replace(
-      /TEX=CDN\+'6a12480e77f832e5f99643e1_webtexture1\.webp'/,
-      `TEX=(window.matchMedia&&matchMedia('${PHONE}').matches)?'${tex}':CDN+'6a12480e77f832e5f99643e1_webtexture1.webp'`,
-    )
-  }
 
   if (head) out = before(out, '</head>', head)
   if (tail) out = before(out, '</body>', tail)
