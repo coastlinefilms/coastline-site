@@ -52,6 +52,11 @@
     wrap.style.opacity = '1'
     wake()
   }, { passive: true })
+  /* An iframe (the Vimeo reel's control bar) swallows the mouse, so fade out rather than freeze at its edge.
+     The next move back on the page brings the cursor back. The reel's picture is covered by a shield (cf-tilt.js). */
+  document.addEventListener('pointerover', function (e) {
+    if (e.target && e.target.tagName === 'IFRAME') wrap.style.opacity = '0'
+  }, { passive: true })
   document.documentElement.addEventListener('mouseleave', function () { wrap.style.opacity = '0' })
   document.addEventListener('mouseenter', function () { if (started) wrap.style.opacity = '1' })
 

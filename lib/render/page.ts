@@ -21,9 +21,9 @@ function track(html: string, status = 200) {
   return i === -1 ? html + tag : html.slice(0, i) + tag + html.slice(i)
 }
 
-/** Mosaic-style trailing cursor, home page only (see public/cf-cursor.js). */
+/** Home page only: Mosaic-style trailing cursor (public/cf-cursor.js) and the card tilt (public/cf-tilt.js). */
 function homeCursor(html: string) {
-  const tag = '<script defer src="/cf-cursor.js"></script>'
+  const tag = '<script defer src="/cf-cursor.js"></script><script defer src="/cf-tilt.js"></script>'
   const i = html.lastIndexOf('</body>')
   return i === -1 ? html + tag : html.slice(0, i) + tag + html.slice(i)
 }
