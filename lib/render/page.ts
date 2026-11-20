@@ -28,9 +28,14 @@ function homeCursor(html: string) {
   return i === -1 ? html + tag : html.slice(0, i) + tag + html.slice(i)
 }
 
-/** Blog index: the same card tilt as the home page at 64% strength, on the featured post and the grid cards. */
+/**
+ * Blog index: the home card tilt at 64% strength on the grid cards, half that on the featured post.
+ * The image wraps get their own rounded clip, so the 12px corners hold while a card tilts and its image zooms.
+ */
 function blogTilt(html: string) {
-  const tag = '<script defer src="/cf-tilt.js" data-strength="0.64" data-cards=".journal-featured,.journal-card"></script>'
+  const tag =
+    '<style>.journal-card-image-wrap,.journal-featured-image-wrap{border-radius:12px;clip-path:inset(0 round 12px)}</style>' +
+    '<script defer src="/cf-tilt.js" data-strength="0.64" data-cards=".journal-card,.journal-featured@0.5"></script>'
   const i = html.lastIndexOf('</body>')
   return i === -1 ? html + tag : html.slice(0, i) + tag + html.slice(i)
 }

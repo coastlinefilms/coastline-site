@@ -16,7 +16,10 @@
 
   var me = document.currentScript
   var S = parseFloat((me && me.getAttribute('data-strength')) || '1') || 1
-  var CARDS = (me && me.getAttribute('data-cards')) || '.sv-card'
+  /* "selector" or "selector@factor", comma separated: .journal-featured@0.5 tilts at half the page strength */
+  var CARDS = ((me && me.getAttribute('data-cards')) || '.sv-card').split(',').map(function (x) {
+    var p = x.trim().split('@'); return { sel: p[0], k: parseFloat(p[1] || '1') || 1 }
+  })
   var MAX = 10 * S, LIFT = 1 + 0.015 * S, SHIFT = 9 * S, EASE = 'cubic-bezier(0,0,.2,1)'
   var FAST = 'transform .2s ' + EASE + ', box-shadow .2s ' + EASE
 
@@ -127,7 +130,7 @@
 
   function init() {
     reel()
-    ;[].slice.call(document.querySelectorAll(CARDS)).forEach(function (el) { tilt(el, 1) })
+    CARDS.forEach(function (c) { [].slice.call(document.querySelectorAll(c.sel)).forEach(function (el) { tilt(el, c.k) }) })
     flow()
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init)
