@@ -28,6 +28,13 @@ function homeCursor(html: string) {
   return i === -1 ? html + tag : html.slice(0, i) + tag + html.slice(i)
 }
 
+/** Blog index: the same card tilt as the home page, 20% softer, on the featured post and the grid cards. */
+function blogTilt(html: string) {
+  const tag = '<script defer src="/cf-tilt.js" data-strength="0.8" data-cards=".journal-featured,.journal-card"></script>'
+  const i = html.lastIndexOf('</body>')
+  return i === -1 ? html + tag : html.slice(0, i) + tag + html.slice(i)
+}
+
 /**
  * Branded 404 (Nov 2026): the Privacy page's shell (nav, styles, footer) with the
  * legal copy swapped for a short message and two ways forward.
@@ -87,7 +94,7 @@ async function renderCore(path: string): Promise<Rendered> {
     if (staticHtml.includes('<!--CMS:')) {
       const [projects, posts] = await Promise.all([listProjects(), listPosts()])
       const html = track(rewriteAssets(applyFooter(fillLists(staticHtml, { projects, posts }))))
-      return { status: 200, html: p === '/' ? homeCursor(html) : html }
+      return { status: 200, html: p === '/' ? homeCursor(html) : p === '/blog' ? blogTilt(html) : html }
     }
     const html = track(rewriteAssets(applyFooter(staticHtml)))
     return { status: 200, html: p === '/' ? homeCursor(html) : html }

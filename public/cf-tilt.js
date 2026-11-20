@@ -7,15 +7,20 @@
  * could see the mouse over it). A transparent shield now sits over the picture, leaving Vimeo's control
  * bar along the bottom uncovered; a click on the shield plays or pauses the reel through Vimeo's
  * postMessage API. */
+/* Other pages reuse it through the script tag: data-cards is a selector list of cards to tilt
+ * (default: the home service cards), data-strength scales the effect (the blog uses 0.8, 20% softer). */
 (function () {
   if (!matchMedia('(hover: hover) and (pointer: fine) and (min-width: 768px)').matches) return
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
-  var MAX = 10, LIFT = 1.015, EASE = 'cubic-bezier(0,0,.2,1)'
+  var me = document.currentScript
+  var S = parseFloat((me && me.getAttribute('data-strength')) || '1') || 1
+  var CARDS = (me && me.getAttribute('data-cards')) || '.sv-card'
+  var MAX = 10 * S, LIFT = 1 + 0.015 * S, SHIFT = 9 * S, EASE = 'cubic-bezier(0,0,.2,1)'
   var FAST = 'transform .2s ' + EASE + ', box-shadow .2s ' + EASE
 
   function shadow(px, py) {
-    var sx = ((0.5 - px) * 2 * 9).toFixed(1), sy = ((0.5 - py) * 2 * 9).toFixed(1)
+    var sx = ((0.5 - px) * 2 * SHIFT).toFixed(1), sy = ((0.5 - py) * 2 * SHIFT).toFixed(1)
     return '0 30px 80px -45px rgba(0,0,0,.55), ' + sx + 'px ' + sy + 'px 44px -34px rgba(0,0,0,.35), 0 2px 10px rgba(0,0,0,.08)'
   }
   function angles(el, e) {
@@ -119,7 +124,7 @@
 
   function init() {
     reel()
-    ;[].slice.call(document.querySelectorAll('.sv-card')).forEach(tilt)
+    ;[].slice.call(document.querySelectorAll(CARDS)).forEach(tilt)
     flow()
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init)
