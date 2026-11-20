@@ -94,7 +94,7 @@ html body:has(.why-section) .footer-006{padding-top:24px!important}
 }
 /* No tilt or magnetic effects on touch screens: a tap fires a mouse move and left icons and buttons stuck at an angle */
 @media(hover:none),(pointer:coarse){
-html body :is([data-f-tilt],[data-f-tilt-icon],[data-f-tilt-froth],.cf-btn,.cf-nav__cta){transform:none!important}
+html body :is([data-f-tilt],[data-f-tilt-icon],[data-f-tilt-froth],.cf-btn,.cf-nav__cta,.why-video-wrap,.sv-card,.journal-card,.journal-featured){transform:none!important}
 }
 </style>`
 
