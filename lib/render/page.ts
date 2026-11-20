@@ -28,9 +28,9 @@ function homeCursor(html: string) {
   return i === -1 ? html + tag : html.slice(0, i) + tag + html.slice(i)
 }
 
-/** Blog index: the same card tilt as the home page, 20% softer, on the featured post and the grid cards. */
+/** Blog index: the same card tilt as the home page at 64% strength, on the featured post and the grid cards. */
 function blogTilt(html: string) {
-  const tag = '<script defer src="/cf-tilt.js" data-strength="0.8" data-cards=".journal-featured,.journal-card"></script>'
+  const tag = '<script defer src="/cf-tilt.js" data-strength="0.64" data-cards=".journal-featured,.journal-card"></script>'
   const i = html.lastIndexOf('</body>')
   return i === -1 ? html + tag : html.slice(0, i) + tag + html.slice(i)
 }
