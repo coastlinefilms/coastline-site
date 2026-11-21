@@ -4,7 +4,7 @@
  * into the header PNG's own coordinates so the last frame sits exactly on the static logo, recoloured to
  * bone #E4DDCB, duplicates removed (30 unique frames), 400x125 per frame (3x a 40px logo), lossless with alpha.
  *
- * At rest the page always shows the normal logo image. On hover a canvas plays the reveal over it, then the
+ * At rest the page always shows the normal logo image. On hover a canvas plays the reveal over it at 1.5x speed, then the
  * logo image comes back underneath and the canvas fades off it. Desktop mouse only (nothing on phones or
  * tablets), off for reduced motion, and the sprite loads only after the page has finished loading. */
 (function () {
@@ -12,7 +12,7 @@
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
   var M = {
-    src: '/logo-reveal-v1.webp', w: 400, h: 125, cols: 6, fps: 24,
+    src: '/logo-reveal-v1.webp', w: 400, h: 125, cols: 6, fps: 36, /* source is 24fps; 36 plays it 1.5x faster (1.2s) */
     top: -4.1667, height: 104.1667, /* frame area vs the logo box, in % of its height: the swirl rises just above the letters */
     t: [0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 24, 25, 25, 26, 26, 27, 27, 28, 28, 29]
   }
