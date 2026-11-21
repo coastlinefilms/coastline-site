@@ -7,8 +7,8 @@
  *  - drops Webflow leftovers: the WebFont loader, the CDN preconnect, loader preloads
  */
 
-const DEFAULT_OG =
-  'https://cdn.prod.website-files.com/69ecc5fb6fc18880aa9fc6c6/6a97104131eb4940181760f8_Graph.jpg'
+/** Share card (public/og-share.jpg, 1200x630): logo kept inside the centre square, because Facebook crops comment previews to a square */
+const DEFAULT_OG = 'https://www.coastlinefilms.ca/og-share.jpg'
 
 const FACES: [string, number, 'normal' | 'italic'][] = [
   ['Light', 300, 'normal'],
@@ -125,7 +125,7 @@ export function applyHead(html: string): string {
   let add = FONT_BLOCK + '\n' + googleFonts(html)
   // Google Analytics, Meta Pixel and verification tags come from Dashboard > Integrations (lib/settings.ts)
   if (!/property="og:image"/.test(head)) {
-    add += `\n<meta property="og:image" content="${DEFAULT_OG}" data-cf-default>\n<meta name="twitter:image" content="${DEFAULT_OG}" data-cf-default>`
+    add += `\n<meta property="og:image" content="${DEFAULT_OG}" data-cf-default>\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n<meta name="twitter:image" content="${DEFAULT_OG}" data-cf-default>`
     if (!/name="twitter:card"/.test(head)) add += '\n<meta name="twitter:card" content="summary_large_image">'
   }
   return head + add + '\n' + rest
