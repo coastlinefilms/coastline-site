@@ -134,7 +134,8 @@ const MARKUP = `<nav class="cf-nav" id="cfNav" aria-label="Main">
     },{passive:true});
   }
 })();
-</script>`
+</script>
+<script defer src="/cf-logo-anim.js"></script>`
 
 const START = '<style>\n.cf-nav{'
 
