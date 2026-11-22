@@ -5,7 +5,7 @@ export const STATIC_PAGES: { path: string; lastmod: string; sitemap: boolean }[]
   { path: '/work', lastmod: '2026-11-15T21:55:00.000Z', sitemap: true },
   { path: '/about', lastmod: '2026-11-15T21:45:00.000Z', sitemap: true },
   { path: '/contact', lastmod: '2026-11-15T21:45:00.000Z', sitemap: true },
-  { path: '/blog', lastmod: '2026-11-15T21:45:00.000Z', sitemap: true },
+  { path: '/blog', lastmod: '2026-11-22T22:30:00.000Z', sitemap: true },
   { path: '/video-production-cost-calculator', lastmod: '2026-11-15T21:45:00.000Z', sitemap: true },
   { path: '/squamish-videographer', lastmod: '2026-11-15T21:45:00.000Z', sitemap: true },
   { path: '/muskoka-toronto-videographer', lastmod: '2026-11-15T21:45:00.000Z', sitemap: true },
