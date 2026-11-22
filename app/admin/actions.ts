@@ -66,12 +66,14 @@ async function save(table: 'site_blog_posts' | 'site_projects', id: string | nul
 
 export async function savePost(id: string | null, input: Partial<Post>) {
   const row = pick(input, POST_FIELDS)
-  if (row.journal_featured === true) {
-    // Only one post can be featured on /blog
+  const res = await save('site_blog_posts', id, row)
+  if (res.ok && row.journal_featured === true) {
+    // Only one post can be featured on /blog: unfeature the others once this save has gone through
     const sb = await serverClient()
-    await sb.from('site_blog_posts').update({ journal_featured: false }).neq('id', id ?? '00000000-0000-0000-0000-000000000000')
+    await sb.from('site_blog_posts').update({ journal_featured: false }).neq('id', res.id)
+    await purgeSite()
   }
-  return save('site_blog_posts', id, row)
+  return res
 }
 
 export async function saveProject(id: string | null, input: Partial<Project>) {

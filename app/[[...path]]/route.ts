@@ -6,7 +6,8 @@ export const dynamic = 'force-dynamic'
 
 // Pages are rendered from Supabase on request and cached at Vercel's edge.
 // Saving in /admin purges the 'site' tag, so CMS and Dashboard changes show up on the next visit.
-const CACHE = 'public, max-age=0, s-maxage=60, stale-while-revalidate=86400'
+// stale-if-error: if a render fails (e.g. a database hiccup), the CDN keeps serving the last good copy
+const CACHE = 'public, max-age=0, s-maxage=60, stale-while-revalidate=86400, stale-if-error=604800'
 
 export async function GET(_req: Request, ctx: { params: Promise<{ path?: string[] }> }) {
   const { path } = await ctx.params

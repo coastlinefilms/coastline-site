@@ -1,7 +1,7 @@
 import templates from '@/content/templates.json'
 import type { Post, Project } from '@/lib/types'
 import { renderCoverflow } from './coverflow'
-import { reelFilters, reelGrid, reelStrip } from './reel'
+import { reelFilters, reelGrid, reelSchema, reelStrip } from './reel'
 
 type T = Record<string, string>
 const tpl = templates as unknown as T
@@ -92,6 +92,8 @@ export function fillLists(html: string, data: { projects: Project[]; posts: Post
         return reelStrip(sortPosts(data.posts))
       case 'reelFilters':
         return reelFilters(sortPosts(data.posts))
+      case 'reelSchema':
+        return reelSchema(sortPosts(data.posts))
       case 'reelGrid':
         return reelGrid(sortPosts(data.posts))
       default:

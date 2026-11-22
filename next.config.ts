@@ -15,6 +15,19 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      // Baseline security headers on every response (Nov 2026 audit)
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'Content-Security-Policy', value: "frame-ancestors 'self'" },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=()' },
+        ],
+      },
+      // The admin can never be framed, even by the site itself
+      { source: '/admin/:path*', headers: [{ key: 'X-Frame-Options', value: 'DENY' }, { key: 'Content-Security-Policy', value: "frame-ancestors 'none'" }] },
       // Keep the temporary *.vercel.app address out of search results; the real domain is unaffected
       {
         source: '/:path*',
@@ -33,8 +46,8 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // The blog index moved from /journal to /blog (Nov 2026); keep old links and rankings
-      { source: '/journal', destination: '/blog', statusCode: 301 },
+      // /journal is NOT redirected: it renders the blog index with a canonical to /blog (lib/render/page.ts),
+      // because browsers that kept Webflow's old /blog -> /journal 301 would loop
       // Other redirects (mirrored from Webflow) live in admin > Dashboard > Publishing
       { source: '/admin/insights', destination: '/admin/analytics', permanent: false },
       { source: '/admin/insights/:view', destination: '/admin/analytics/:view', permanent: false },

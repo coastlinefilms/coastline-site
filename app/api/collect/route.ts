@@ -15,8 +15,35 @@ function parseUA(ua: string) {
   return { device, browser, os }
 }
 
+// Only our own pages may send beacons; a rough per-IP cap stops one client flooding the table
+const ALLOWED_HOST = /(^|\.)coastlinefilms\.ca$|\.vercel\.app$/
+const WINDOW_MS = 60_000
+const MAX_PER_WINDOW = 120
+const hits = new Map<string, { n: number; t: number }>()
+function limited(ip: string) {
+  const now = Date.now()
+  const h = hits.get(ip)
+  if (!h || now - h.t > WINDOW_MS) {
+    hits.set(ip, { n: 1, t: now })
+    if (hits.size > 5000) for (const [k, v] of hits) if (now - v.t > WINDOW_MS) hits.delete(k)
+    return false
+  }
+  h.n++
+  return h.n > MAX_PER_WINDOW
+}
+
 // Receives beacons from /cf-a.js and stores them in Supabase (insert-only for the public key).
 export async function POST(req: Request) {
+  const origin = req.headers.get('origin')
+  if (origin) {
+    try {
+      if (!ALLOWED_HOST.test(new URL(origin).hostname)) return new Response(null, { status: 403 })
+    } catch {
+      return new Response(null, { status: 403 })
+    }
+  }
+  const ip = (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim() || 'unknown'
+  if (limited(ip)) return new Response(null, { status: 429 })
   const ua = req.headers.get('user-agent') ?? ''
   if (!ua || BOT.test(ua)) return new Response(null, { status: 204 })
   const text = await req.text()

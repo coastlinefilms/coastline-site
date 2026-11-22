@@ -96,11 +96,12 @@ export function bindText(el: Cheerio<AnyNode>, v: string | null | undefined) {
   }
 }
 
-export function vimeoEmbed(id: string) {
+export function vimeoEmbed(id: string, opts: { title?: string; lazy?: boolean } = {}) {
   const src = `https://player.vimeo.com/video/${encodeURIComponent(id)}?title=0&byline=0&portrait=0`
+  const title = (opts.title || 'Coastline Films video').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
   return `<div class="w-embed"><div style="position:relative;padding-top:56.25%;background:#000">
-<iframe src="${src}"
+<iframe src="${src}" title="${title}"${opts.lazy ? ' loading="lazy"' : ''}
 style="position:absolute;inset:0;width:100%;height:100%;border:0"
-allowfullscreen></iframe>
+allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 </div></div>`
 }

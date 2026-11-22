@@ -28,7 +28,7 @@ const STYLE = `<style>
   /* socials */
   .footer-006-socials { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 16px 48px; margin-top: 28px; }
   .f-social-tilt, .f-froth-tilt { display: inline-flex; transform-style: preserve-3d; will-change: transform; padding: 20px; margin: -20px; }
-  .footer-006-social { width: 36px; height: 36px; color: rgba(228,221,203,0.9); transition: color 0.3s ease; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+  .footer-006-social { width: 44px; height: 44px; color: rgba(228,221,203,0.9); transition: color 0.3s ease; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
   .footer-006-social svg { width: 36px; height: 36px; display: block; }
   .footer-006-social.ig:hover    { color: #E1306C; }
   .footer-006-social.vimeo:hover { color: #1AB7EA; }
@@ -69,14 +69,14 @@ const STYLE = `<style>
     .footer-006-main > .footer-006-col:nth-of-type(4) { grid-column: 5; grid-row: 1; }
     .footer-006-socials { gap: 16px 28px; }
   }
-  .footer-006-col-h { margin: 0 0 12px; font-family: Neuemontreal, 'Neue Montreal', sans-serif; font-size: 11px; font-weight: 500; line-height: 1.4; letter-spacing: 0.14em; text-transform: uppercase; color: #7A736A; }
+  .footer-006-col-h { margin: 0 0 12px; font-family: Neuemontreal, 'Neue Montreal', sans-serif; font-size: 12px; font-weight: 500; line-height: 1.4; letter-spacing: 0.14em; text-transform: uppercase; color: #9A948A; }
   .footer-006-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; }
   .footer-006-col a { font-family: Neuemontreal, 'Neue Montreal', sans-serif; font-size: 13px; font-weight: 500; line-height: 1.4; letter-spacing: 0; color: rgba(228,221,203,0.55); text-decoration: none; transition: color 0.4s ease; }
   .footer-006-col a:hover { color: #E4DDCB; }
 
   /* fine print */
   .footer-006-bottom { width: 100%; margin-top: 48px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
-  .footer-006-copy { margin: 0; font-family: Neuemontreal, 'Neue Montreal', sans-serif; font-size: 11px; line-height: 1.8; letter-spacing: 0.10em; text-transform: uppercase; color: rgba(228,221,203,0.25); }
+  .footer-006-copy { margin: 0; font-family: Neuemontreal, 'Neue Montreal', sans-serif; font-size: 12px; line-height: 1.8; letter-spacing: 0.10em; text-transform: uppercase; color: rgba(228,221,203,0.5); }
   .footer-006-copy a { color: rgba(228,221,203,0.45); text-decoration: none; transition: color 0.25s ease; }
   .footer-006-copy a:hover { color: #E4DDCB; }
   .footer-006-legal a + a { margin-left: 24px; }

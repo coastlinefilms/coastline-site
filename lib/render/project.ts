@@ -41,9 +41,15 @@ export function renderProject(p: Project, all: Project[] = []): string {
   // Videos: hero, then an optional row with video 2 and video 3
   const hero = $('section.herovideo').first()
   const extra = [p.video_2, p.video_3].filter((v): v is string => !!v)
+  const vt = (n: number) => `${p.name}${n ? ` (video ${n + 1})` : ''}: ${p.client ?? 'Coastline Films'}`
   hero.html(
-    (p.hero_video ? vimeoEmbed(p.hero_video) : '') +
-      (extra.length ? `<div class="div-block-5">${extra.map(vimeoEmbed).join('')}</div>` : ''),
+    (p.hero_video ? vimeoEmbed(p.hero_video, { title: vt(0) }) : '') +
+      // two extras sit side by side; a single extra runs full width instead of half a row
+      (extra.length === 2
+        ? `<div class="div-block-5">${extra.map((v, i) => vimeoEmbed(v, { title: vt(i + 1), lazy: true })).join('')}</div>`
+        : extra.length === 1
+          ? `<div style="margin-top:24px">${vimeoEmbed(extra[0], { title: vt(1), lazy: true })}</div>`
+          : ''),
   )
   if (!p.hero_video && !extra.length) hero.remove()
 

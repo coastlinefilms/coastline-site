@@ -11,7 +11,7 @@ export async function listProjects(sb: SupabaseClient = publicClient()): Promise
 }
 
 export async function listPosts(sb: SupabaseClient = publicClient()): Promise<Post[]> {
-  const { data, error } = await sb.from('site_blog_posts').select('*').eq('status', 'published')
+  const { data, error } = await sb.from('site_blog_posts_public').select('*')
   if (error) throw error
   return (data ?? []) as Post[]
 }
@@ -23,7 +23,7 @@ export async function getProject(slug: string, sb: SupabaseClient = publicClient
 }
 
 export async function getPost(slug: string, sb: SupabaseClient = publicClient()) {
-  const { data, error } = await sb.from('site_blog_posts').select('*').eq('slug', slug).eq('status', 'published').maybeSingle()
+  const { data, error } = await sb.from('site_blog_posts_public').select('*').eq('slug', slug).maybeSingle()
   if (error) throw error
   return data as Post | null
 }

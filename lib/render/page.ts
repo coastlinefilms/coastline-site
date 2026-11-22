@@ -2,6 +2,7 @@ import pages from '@/content/pages.json'
 import { listPosts, listProjects, getPost, getProject } from '@/lib/cms'
 import { rewriteAssets } from './assets'
 import { phonePerf } from './perf'
+import { auditFixes } from './fixes'
 import { applyFooter } from './footer'
 import { fillLists } from './lists'
 import { renderProject } from './project'
@@ -16,7 +17,7 @@ export type Rendered = { status: number; html: string; location?: string }
 /** First-party analytics beacon (see public/cf-a.js). */
 function track(html: string, status = 200) {
   const tag = `<script defer src="/cf-a.js" data-status="${status}"></script>`
-  html = phonePerf(html)
+  html = auditFixes(phonePerf(html))
   const i = html.lastIndexOf('</body>')
   return i === -1 ? html + tag : html.slice(0, i) + tag + html.slice(i)
 }
@@ -36,6 +37,25 @@ function blogTilt(html: string) {
   const tag = '<script defer src="/cf-tilt.js" data-strength="0.64" data-cards=".cfrl-card,.cfrl-frame@0.5"></script>'
   const i = html.lastIndexOf('</body>')
   return i === -1 ? html + tag : html.slice(0, i) + tag + html.slice(i)
+}
+
+/** Thank-you pages the booking calendars redirect to: fire the Meta and GA4 booking conversions (public/cf-conv.js). */
+const CONVERSION_PAGES: Record<string, string> = {
+  '/discovery-booked': '<script defer src="/cf-conv.js" data-kind="Discovery call"></script>',
+  '/booked': '<script defer src="/cf-conv.js" data-kind="Growth Program strategy call"></script>',
+  '/call-confirmed': '<script defer src="/cf-conv.js" data-kind="Build strategy call" data-skip-schedule="1"></script>',
+}
+
+/** Page-specific additions on top of the shared render. */
+function pageExtras(html: string, p: string) {
+  if (p === '/') return homeCursor(html)
+  if (p === '/blog') return blogTilt(html)
+  const conv = CONVERSION_PAGES[p]
+  if (conv) {
+    const i = html.lastIndexOf('</body>')
+    return i === -1 ? html + conv : html.slice(0, i) + conv + html.slice(i)
+  }
+  return html
 }
 
 /**
@@ -90,17 +110,19 @@ export async function renderPath(path: string): Promise<Rendered> {
 
 /** Render any public path exactly as Webflow served it. */
 async function renderCore(path: string): Promise<Rendered> {
-  const p = path === '' ? '/' : path
+  // /journal shows the blog index (canonical /blog) instead of redirecting: browsers that saved
+  // Webflow's old permanent /blog -> /journal redirect would otherwise loop between the two
+  const p = path === '' ? '/' : path === '/journal' ? '/blog' : path
 
   const staticHtml = PAGES[p]
   if (staticHtml && !p.startsWith('__')) {
     if (staticHtml.includes('<!--CMS:')) {
       const [projects, posts] = await Promise.all([listProjects(), listPosts()])
       const html = track(rewriteAssets(applyFooter(fillLists(staticHtml, { projects, posts }))))
-      return { status: 200, html: p === '/' ? homeCursor(html) : p === '/blog' ? blogTilt(html) : html }
+      return { status: 200, html: pageExtras(html, p) }
     }
     const html = track(rewriteAssets(applyFooter(staticHtml)))
-    return { status: 200, html: p === '/' ? homeCursor(html) : html }
+    return { status: 200, html: pageExtras(html, p) }
   }
 
   const m = p.match(/^\/(projects|blog)\/([^/]+)$/)

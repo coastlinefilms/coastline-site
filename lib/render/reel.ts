@@ -55,8 +55,28 @@ export function reelFilters(sorted: Post[]) {
 export function reelGrid(sorted: Post[]) {
   return sorted
     .map((p) => {
-      const meta = [p.category, minutes(p), formatDate(p.publish_date)].filter(Boolean).map(esc).join('&nbsp; / &nbsp;')
-      return `<a class="cfrl-card" href="/blog/${esc(p.slug)}" data-post-slug="${esc(p.slug)}" data-cat="${slugify(p.category)}"><span class="cfrl-card__ph">${img(p, '(max-width: 900px) 100vw, 33vw')}</span><span class="cfrl-card__body"><span class="cfrl-mono">${meta}</span><span class="cfrl-card__t">${esc(p.name)}</span><span class="cfrl-card__ex">${esc(p.excerpt)}</span></span></a>`
+      // The category gets its own span: post pages read it (and the <h3> title) when they build "You may also like" from /blog
+      const cat = p.category ? `<span class="cfrl-cat">${esc(p.category)}</span>` : ''
+      const meta = [cat, ...[minutes(p), formatDate(p.publish_date)].filter(Boolean).map(esc)].filter(Boolean).join('&nbsp; / &nbsp;')
+      return `<a class="cfrl-card" href="/blog/${esc(p.slug)}" data-post-slug="${esc(p.slug)}" data-cat="${slugify(p.category)}"><span class="cfrl-card__ph">${img(p, '(max-width: 900px) 100vw, 33vw')}</span><span class="cfrl-card__body"><span class="cfrl-mono">${meta}</span><h3 class="cfrl-card__t">${esc(p.name)}</h3><span class="cfrl-card__ex">${esc(p.excerpt)}</span></span></a>`
     })
     .join('')
+}
+
+/** CollectionPage + ItemList structured data for /blog. */
+export function reelSchema(sorted: Post[]) {
+  const SITE = 'https://www.coastlinefilms.ca'
+  const data = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    '@id': `${SITE}/blog#collection`,
+    name: 'Field Notes',
+    url: `${SITE}/blog`,
+    isPartOf: { '@id': `${SITE}/#website` },
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: sorted.map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: `${SITE}/blog/${p.slug}`, name: p.name })),
+    },
+  }
+  return `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`
 }

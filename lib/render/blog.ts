@@ -68,8 +68,8 @@ export function renderPost(p: Post): string {
   // Hero
   const hero = $('.post-hero img.post-hero-img').first()
   bindImg(hero, p.hero_image, { alt: p.name })
-  if (p.hero_image?.url) hero.attr('style', `background-image:url("${p.hero_image.url}")`)
-  else hero.removeAttr('style')
+  // The hero is the largest thing on screen: load it first, and only once (no background-image copy of the original)
+  hero.removeAttr('style').attr('loading', 'eager').attr('fetchpriority', 'high')
 
   // Header
   bindText($('.post-eyebrow').first(), p.category)
@@ -91,7 +91,12 @@ export function renderPost(p: Post): string {
   figs.forEach((fig, i) => {
     const s = sections[i]
     if (!s) return
-    bindImg($(fig).find('img').first(), s.img, { alt: s.img?.alt || s.alt || '', keepEmpty: true })
+    // No image: drop the whole figure instead of leaving an empty <img src="">
+    if (!s.img?.url) {
+      $(fig).remove()
+      return
+    }
+    bindImg($(fig).find('img').first(), s.img, { alt: s.img?.alt || s.alt || '' })
     bindText($(fig).find('.post-section-caption').first(), s.caption)
   })
 

@@ -16,7 +16,8 @@ export async function GET(req: Request) {
     return new Response('Bad url', { status: 400 })
   }
   const own = src.origin === new URL(req.url).origin && src.pathname.startsWith('/logos/')
-  if (!(src.protocol === 'https:' && src.hostname === BLOB_HOST) && !own) return new Response('Not allowed', { status: 400 })
+  const blob = src.protocol === 'https:' && src.hostname === BLOB_HOST && src.pathname.startsWith('/site/')
+  if ((!blob && !own) || !/\.(png|webp|jpe?g|gif|avif)$/i.test(src.pathname)) return new Response('Not allowed', { status: 400 })
 
   const res = await fetch(src, { cache: 'force-cache' })
   if (!res.ok) return new Response('Not found', { status: 404 })
