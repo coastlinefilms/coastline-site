@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
   // Webflow served URLs without trailing slashes; /work/ -> /work
   trailingSlash: false,
   poweredByHeader: false,
+  // WOFF2 encoder (app/fonts) loads its own wasm build; keep it out of the bundle
+  serverExternalPackages: ['wawoff2'],
   // Phone-sized copies of the big Blob images (lib/render/perf.ts), served from this domain
   images: {
     remotePatterns: [{ protocol: 'https', hostname: 'six9ethpn7gbia9t.public.blob.vercel-storage.com', pathname: '/site/**' }],

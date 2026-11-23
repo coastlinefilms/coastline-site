@@ -8,7 +8,7 @@ import { sortWork } from './lists'
  * Projects Template (/projects/:slug). The template is the live Webflow page for
  * one project, captured verbatim; every CMS-bound node is re-bound here.
  */
-export function renderProject(p: Project, all: Project[] = []): string {
+export function renderProject(p: Project, all: Project[] = [], posters: Record<string, string> = {}): string {
   const $ = load((templates as { project: string }).project)
   const canonical = `${SITE}/projects/${p.slug}`
   const seoTitle = p.seo_title || `${p.name} | Coastline Films`
@@ -42,13 +42,15 @@ export function renderProject(p: Project, all: Project[] = []): string {
   const hero = $('section.herovideo').first()
   const extra = [p.video_2, p.video_3].filter((v): v is string => !!v)
   const vt = (n: number) => `${p.name}${n ? ` (video ${n + 1})` : ''}: ${p.client ?? 'Coastline Films'}`
+  // Poster: Vimeo's own frame, else the project's header image
+  const poster = (id: string) => posters[id] ?? p.header?.url ?? null
   hero.html(
-    (p.hero_video ? vimeoEmbed(p.hero_video, { title: vt(0) }) : '') +
+    (p.hero_video ? vimeoEmbed(p.hero_video, { title: vt(0), poster: poster(p.hero_video) }) : '') +
       // two extras sit side by side; a single extra runs full width instead of half a row
       (extra.length === 2
-        ? `<div class="div-block-5">${extra.map((v, i) => vimeoEmbed(v, { title: vt(i + 1), lazy: true })).join('')}</div>`
+        ? `<div class="div-block-5">${extra.map((v, i) => vimeoEmbed(v, { title: vt(i + 1), lazy: true, poster: poster(v) })).join('')}</div>`
         : extra.length === 1
-          ? `<div style="margin-top:24px">${vimeoEmbed(extra[0], { title: vt(1), lazy: true })}</div>`
+          ? `<div style="margin-top:24px">${vimeoEmbed(extra[0], { title: vt(1), lazy: true, poster: poster(extra[0]) })}</div>`
           : ''),
   )
   if (!p.hero_video && !extra.length) hero.remove()

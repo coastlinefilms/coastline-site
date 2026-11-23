@@ -96,12 +96,12 @@ export function bindText(el: Cheerio<AnyNode>, v: string | null | undefined) {
   }
 }
 
-export function vimeoEmbed(id: string, opts: { title?: string; lazy?: boolean } = {}) {
-  const src = `https://player.vimeo.com/video/${encodeURIComponent(id)}?title=0&byline=0&portrait=0`
-  const title = (opts.title || 'Coastline Films video').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
-  return `<div class="w-embed"><div style="position:relative;padding-top:56.25%;background:#000">
-<iframe src="${src}" title="${title}"${opts.lazy ? ' loading="lazy"' : ''}
-style="position:absolute;inset:0;width:100%;height:100%;border:0"
-allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
-</div></div>`
+/** Click-to-play Vimeo (public/cf-vimeo.js): poster + play button; the player loads only when pressed. */
+export function vimeoEmbed(id: string, opts: { title?: string; lazy?: boolean; poster?: string | null } = {}) {
+  const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
+  const title = esc(opts.title || 'Coastline Films video')
+  const poster = opts.poster
+    ? `<img class="cf-vf__poster" src="${esc(opts.poster)}" alt="" ${opts.lazy ? 'loading="lazy" ' : ''}decoding="async">`
+    : ''
+  return `<div class="w-embed"><div class="cf-vf" data-vimeo="${esc(id)}" data-title="${title}" style="position:relative;padding-top:56.25%;background:#000">${poster}<button type="button" class="cf-vf__play" aria-label="Play: ${title}"><span aria-hidden="true"></span></button></div></div>`
 }

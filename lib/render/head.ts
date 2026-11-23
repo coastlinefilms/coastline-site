@@ -1,6 +1,6 @@
 /**
  * Site-wide <head> fixes, applied to every rendered page (Nov 2026 audit):
- *  - Neue Montreal served under every family name the pages use
+ *  - Neue Montreal (WOFF2, one set of files) served under every family name the pages use
  *    ("Neuemontreal", "Neue Montreal", "neue-montreal"), so no text falls back
  *  - only the Google fonts a page actually uses (Space Mono, Poppins, Inter/Fraunces)
  *  - a default share image where a page has none
@@ -37,11 +37,12 @@ const FONT_URL: Record<string, string> = {
 const FONT_CSS = FAMILIES.flatMap((fam) =>
   FACES.map(
     ([file, w, s]) =>
-      `@font-face{font-family:'${fam}';src:url(${FONT_URL[file]}) format('opentype');font-weight:${w};font-style:${s};font-display:swap}`,
+      // WOFF2 from app/fonts (one set of files behind all three family names); the .otf stays as a fallback
+      `@font-face{font-family:'${fam}';src:url(/fonts/NeueMontreal-${file}.woff2) format('woff2'),url(${FONT_URL[file]}) format('opentype');font-weight:${w};font-style:${s};font-display:swap}`,
   ),
 ).join('\n')
 
-const FONT_BLOCK = `<link rel="preload" href="${FONT_URL.Regular}" as="font" type="font/otf" crossorigin>
+const FONT_BLOCK = `<link rel="preload" href="/fonts/NeueMontreal-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <style id="cf-fonts">
 ${FONT_CSS}
 /* the only Webflow class that asked for Montserrat */

@@ -91,11 +91,12 @@
     ;[].slice.call(stage.querySelectorAll('.cf-flow__card')).forEach(function (c) { mo.observe(c, { attributes: true, attributeFilter: ['class'] }) })
   }
 
-  /* Reel: shield the Vimeo iframe so the mouse stays visible to the page */
+  /* Reel: shield the Vimeo player so the mouse stays visible to the page. The reel starts as a
+   * click-to-play poster (public/cf-vimeo.js); the first click on the shield loads and starts the player,
+   * later clicks play or pause it through Vimeo's postMessage API. */
   function reel() {
     var wrap = document.querySelector('.why-video-wrap')
-    var frame = wrap && wrap.querySelector('iframe')
-    if (!frame) return
+    if (!wrap || !(wrap.querySelector('iframe') || wrap.querySelector('.cf-vf'))) return
     var shield = document.createElement('button')
     shield.type = 'button'
     shield.className = 'cf-reel-shield'
@@ -103,15 +104,16 @@
     shield.style.cssText = 'position:absolute;left:0;right:0;top:0;bottom:64px;z-index:2;margin:0;padding:0;border:0;background:transparent;cursor:pointer;appearance:none;-webkit-appearance:none'
     wrap.appendChild(shield)
 
-    var playing = false, origin = 'https://player.vimeo.com'
+    var frame = null, playing = false, origin = 'https://player.vimeo.com'
     function send(method, value) {
+      if (!frame) return
       var msg = { method: method }
       if (value !== undefined) msg.value = value
       try { frame.contentWindow.postMessage(JSON.stringify(msg), origin) } catch (_) {}
     }
     function listen() { send('addEventListener', 'play'); send('addEventListener', 'pause'); send('addEventListener', 'ended') }
     window.addEventListener('message', function (e) {
-      if (e.origin !== origin || e.source !== frame.contentWindow) return
+      if (!frame || e.origin !== origin || e.source !== frame.contentWindow) return
       var d = e.data
       if (typeof d === 'string') { try { d = JSON.parse(d) } catch (_) { return } }
       if (!d) return
@@ -119,12 +121,24 @@
       if (d.event === 'play') playing = true
       if (d.event === 'pause' || d.event === 'ended') playing = false
     })
-    frame.addEventListener('load', listen)
-    listen()
-    shield.addEventListener('click', function () { send(playing ? 'pause' : 'play'); playing = !playing })
-
-    /* Over Vimeo's own control bar the page loses the mouse again, so settle the tilt there */
-    frame.addEventListener('pointerover', function () { flat(wrap) })
+    function attach(f) {
+      if (!f || f === frame) return
+      frame = f
+      frame.addEventListener('load', listen)
+      /* Over Vimeo's own control bar the page loses the mouse again, so settle the tilt there */
+      frame.addEventListener('pointerover', function () { flat(wrap) })
+      listen()
+    }
+    attach(wrap.querySelector('iframe'))
+    wrap.addEventListener('cf-vimeo-loaded', function (e) { attach(e.detail && e.detail.iframe); playing = true })
+    shield.addEventListener('click', function () {
+      if (!frame) {
+        var box = wrap.querySelector('.cf-vf')
+        if (box && window.cfVimeoLoad) { attach(window.cfVimeoLoad(box)); playing = true }
+        return
+      }
+      send(playing ? 'pause' : 'play'); playing = !playing
+    })
     tilt(wrap, 0.5)
   }
 

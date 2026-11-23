@@ -7,6 +7,7 @@ import { applyFooter } from './footer'
 import { fillLists } from './lists'
 import { renderProject } from './project'
 import { renderPost } from './blog'
+import { vimeoPosters } from './vimeo'
 import { addToHead, projectVideoJsonLd } from './video-schema'
 import { applySettings, getSettings, matchRedirect } from '@/lib/settings'
 
@@ -131,8 +132,9 @@ async function renderCore(path: string): Promise<Rendered> {
     if (m[1] === 'projects') {
       const [proj, all] = await Promise.all([getProject(slug), listProjects()])
       if (!proj) return notFound()
+      const posters = await vimeoPosters([proj.hero_video, proj.video_2, proj.video_3])
       const videoLd = await projectVideoJsonLd(proj)
-      return { status: 200, html: track(rewriteAssets(applyFooter(addToHead(renderProject(proj, all), videoLd)))) }
+      return { status: 200, html: track(rewriteAssets(applyFooter(addToHead(renderProject(proj, all, posters), videoLd)))) }
     }
     const post = await getPost(slug)
     return post ? { status: 200, html: track(rewriteAssets(applyFooter(renderPost(post)))) } : notFound()
