@@ -4,7 +4,9 @@
  * time so content/pages.json keeps the captured Webflow header untouched.
  */
 
-const LOGO = 'https://cdn.prod.website-files.com/69ecc5fb6fc18880aa9fc6c6/69fe6c7428307ab091c9a49f_Coastline%20Films%20copy.png'
+// Header logo pre-scaled to its display size (40px tall at 1x/2x/3x) so the browser never shrinks a big
+// file down to ~40px on the fly: Chrome's fast filtering on the pinned header ate the end of the E's top arm.
+const LOGO_IMG = `<img src="https://six9ethpn7gbia9t.public.blob.vercel-storage.com/site/brand/coastline-films-logo-h40-tc1dNg5hKCrsztGiO6ZyV5k28h7Gpm.png" srcset="https://six9ethpn7gbia9t.public.blob.vercel-storage.com/site/brand/coastline-films-logo-h40-tc1dNg5hKCrsztGiO6ZyV5k28h7Gpm.png 1x, https://six9ethpn7gbia9t.public.blob.vercel-storage.com/site/brand/coastline-films-logo-h80-FYtjsNUiM9N1DEKgbCIOCJzYIcdiYk.png 2x, https://six9ethpn7gbia9t.public.blob.vercel-storage.com/site/brand/coastline-films-logo-h120-ZWWvnnmB6IH4sFh5hRMHY52bcvq7jS.png 3x" width="134" height="40" alt="Coastline Films" decoding="async">`
 const TEXTURE = 'https://cdn.prod.website-files.com/69ecc5fb6fc18880aa9fc6c6/6a12480e77f832e5f99643e1_webtexture1.webp'
 
 const LINKS: [string, string][] = [
@@ -94,7 +96,7 @@ const STYLE = `<style>
 
 const MARKUP = `<nav class="cf-nav" id="cfNav" aria-label="Main">
   <div class="cf-nav__inner">
-    <a href="/" class="cf-nav__logo" aria-label="Coastline Films home"><img src="${LOGO}" alt="Coastline Films"></a>
+    <a href="/" class="cf-nav__logo" aria-label="Coastline Films home">${LOGO_IMG}</a>
     <div class="cf-nav__links">
       ${LINKS.map(([t, h]) => `<a href="${h}" class="cf-nav__link"><span class="cf-nav__t">${t}</span><span class="cf-nav__t is-on" aria-hidden="true">${t}</span></a>`).join('\n      ')}
     </div>
@@ -105,7 +107,7 @@ const MARKUP = `<nav class="cf-nav" id="cfNav" aria-label="Main">
   </div>
   <div class="cf-nav__mobile" id="cfMobile">
     <button class="cf-nav__mobile-close" id="cfClose" aria-label="Close menu">&times;</button>
-    <a href="/" class="cf-nav__mobile-logo" aria-label="Coastline Films home"><img src="${LOGO}" alt="Coastline Films"></a>
+    <a href="/" class="cf-nav__mobile-logo" aria-label="Coastline Films home">${LOGO_IMG}</a>
     <div class="cf-nav__mobile-menu">
       ${LINKS.map(([t, h]) => `<a href="${h}">${t}</a>`).join('\n      ')}
       <a href="/contact" class="cf-nav__mobile-cta">Book a call ${ARROW}</a>
