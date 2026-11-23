@@ -25,9 +25,10 @@ const STYLE = `<style>
   transition:max-width .55s ${EASE},padding .55s ${EASE},background-color .55s ${EASE},border-radius .55s ${EASE},margin-top .55s ${EASE},backdrop-filter .55s ${EASE},-webkit-backdrop-filter .55s ${EASE}}
 .cf-nav.is-scrolled .cf-nav__inner{max-width:1140px;padding:10px 10px 10px 28px;background:rgba(18,20,19,.62);border-radius:56px;margin-top:16px;backdrop-filter:blur(26px) saturate(1.2);-webkit-backdrop-filter:blur(26px) saturate(1.2);box-shadow:0 12px 40px -12px rgba(0,0,0,.55),inset 0 0 0 1px rgba(228,221,203,.08)}
 
-.cf-nav__logo{grid-column:1;justify-self:start;display:block;height:40px;transition:height .55s ${EASE}}
+.cf-nav__logo{grid-column:1;justify-self:start;display:block;height:40px;aspect-ratio:10/3;flex:none;transition:height .55s ${EASE}}
 .cf-nav.is-scrolled .cf-nav__logo{height:32px}
-.cf-nav__logo img{height:100%;width:auto;display:block;transition:filter .4s ease}
+/* width comes from the box's aspect ratio (the PNG is 6000x1800), not the image's own size: Safari sized the box from the srcset and clipped the E */
+.cf-nav__logo img{height:100%;width:100%;max-width:none;object-fit:contain;display:block;transition:filter .4s ease}
 
 .cf-nav__links{grid-column:2;display:flex;align-items:center;gap:44px;transition:gap .55s ${EASE}}
 .cf-nav.is-scrolled .cf-nav__links{gap:36px}

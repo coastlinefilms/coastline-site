@@ -122,8 +122,12 @@ var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isInter
       return `${pre}srcset="${srcset(url, widths)}, ${url} 2400w" sizes="${PHONE} ${phoneSize}, 2400px" src="${url}"`
     })
   }
-  // site logo (nav, mobile menu, footer): a 600px PNG shown ~120px wide
-  phoneImg(/(<img\b[^>]*?)src="(https:\/\/[^"]+_Coastline%20Films%20copy\.png)"/g, [256, 384], '130px')
+  // site logo (nav, mobile menu, footer): a 6000x1800 PNG shown 120-190px wide on every screen,
+  // so desktop gets the small copies too (the old 2400w/2400px pair sent desktops the 6000px original)
+  out = out.replace(/(<img\b[^>]*?)src="(https:\/\/[^"]+_Coastline%20Films%20copy\.png)"/g, (tag: string, pre: string, url: string) => {
+    if (!BLOB.test(url) || /\ssrcset=/.test(tag)) return tag
+    return `${pre}srcset="${srcset(url, [256, 384, 640])}" sizes="190px" src="${url}"`
+  })
   // testimonial avatars: large photos shown as ~56px circles
   phoneImg(/(<div class="cf-test-avatar">\s*<img\b[^>]*?)src="(https:\/\/[^"]+)"/g, [128, 256], '64px')
   // Work cover flow cards
