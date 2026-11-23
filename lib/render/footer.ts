@@ -89,7 +89,8 @@ const STYLE = `<style>
   @media (max-width: 600px) {
     .footer-006 { padding: 40px 24px 24px; }
     .footer-006-logo { height: 48px; }
-    .footer-006-socials { gap: 16px 24px; margin-top: 24px; }
+    /* all six icons on one row: a 6-column grid spread to the logo's width, never a 5 + 1 wrap */
+    .footer-006-socials { display: grid; grid-template-columns: repeat(6, 44px); justify-content: space-between; gap: 16px 0; width: 100%; max-width: 336px; margin-top: 24px; }
     .footer-006-main { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 16px; }
     .footer-006-bottom { flex-direction: column; text-align: center; margin-top: 24px; gap: 8px; }
   }

@@ -33,8 +33,15 @@ const CSS = `<style id="cf-audit-fixes">
 // sliders, tabs or forms), so they are dropped from every page. ~360 KB less script per page.
 const WEBFLOW_SCRIPTS = /<script\b[^>]*\bsrc="[^"]*(?:jquery-3\.5\.1\.min[^"]*|webflow\.schunk\.[^"]*|\/webflow\.[0-9a-f]{8}\.[^"]*)"[^>]*><\/script>/g
 
+/**
+ * Webflow's IX3 "pre-hide" style: hides headings, lists and cards until the Webflow
+ * runtime adds html.w-mod-ix3. That runtime is gone (WEBFLOW_SCRIPTS above), so
+ * anything it matched stayed invisible for good, e.g. the footer page directory.
+ */
+const IX3_PREHIDE = /<style>@media not all and \(prefers-reduced-motion: reduce\)\{html\.w-mod-js:not\(\.w-mod-ix3\)(?:(?!<\/style>)[\s\S])*<\/style>/g
+
 export function auditFixes(html: string): string {
-  let out = html.replace(WEBFLOW_SCRIPTS, '')
+  let out = html.replace(WEBFLOW_SCRIPTS, '').replace(IX3_PREHIDE, '')
   if (/class="[^"]*\bcf-vf\b/.test(out)) {
     const j = out.lastIndexOf('</body>')
     if (j !== -1) out = out.slice(0, j) + '<script defer src="/cf-vimeo.js"></script>' + out.slice(j)
