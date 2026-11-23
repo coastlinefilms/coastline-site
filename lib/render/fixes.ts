@@ -36,7 +36,7 @@ const WEBFLOW_SCRIPTS = /<script\b[^>]*\bsrc="[^"]*(?:jquery-3\.5\.1\.min[^"]*|w
 
 export function auditFixes(html: string): string {
   let out = html.replace(WEBFLOW_SCRIPTS, '')
-  if (out.includes('class="cf-vf"')) {
+  if (/class="[^"]*\bcf-vf\b/.test(out)) {
     const j = out.lastIndexOf('</body>')
     if (j !== -1) out = out.slice(0, j) + '<script defer src="/cf-vimeo.js"></script>' + out.slice(j)
   }
