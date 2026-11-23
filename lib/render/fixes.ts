@@ -45,7 +45,7 @@ const LOGO_IMG_SRC = /(<img\b[^>]*?)\ssrc="[^"]*(?:69fe6c7428307ab091c9a49f_Coas
 function vectorLogo(html: string): string {
   return html.replace(LOGO_IMG_SRC, (_m, pre: string, post: string) => {
     const strip = (t: string) => t.replace(/\s(?:srcset|sizes)="[^"]*"/g, '')
-    return `${strip(pre)} src="/brand/coastline-films-logo.svg"${strip(post)}`
+    return `${strip(pre)} src="/brand/coastline-films-wordmark.svg"${strip(post)}`
   })
 }
 

@@ -6,7 +6,7 @@
 
 // The logo as a vector (traced from the 6000x1800 master PNG): sharp at every size and screen density,
 // and nothing for the browser to resample, so no soft edges and nothing clipped off the E.
-const LOGO_IMG = `<img src="/brand/coastline-films-logo.svg" width="200" height="60" alt="Coastline Films">`
+const LOGO_IMG = `<img src="/brand/coastline-films-wordmark.svg" width="200" height="60" alt="Coastline Films">`
 const TEXTURE = 'https://cdn.prod.website-files.com/69ecc5fb6fc18880aa9fc6c6/6a12480e77f832e5f99643e1_webtexture1.webp'
 
 const LINKS: [string, string][] = [
