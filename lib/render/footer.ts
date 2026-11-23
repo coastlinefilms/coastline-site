@@ -94,8 +94,31 @@ const STYLE = `<style>
     .footer-006-main { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 16px; }
     .footer-006-bottom { flex-direction: column; text-align: center; margin-top: 24px; gap: 8px; }
   }
+  /* page directory toggles: phones only, each group a see-through box that opens in place */
+  .footer-006-tog { display: none; }
+  @media (max-width: 600px) {
+    .footer-006-main { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+    .footer-006-brand { margin-bottom: 22px; }
+    .footer-006-col { text-align: left; border: 1px solid rgba(228,221,203,0.1); border-radius: 16px; background: rgba(228,221,203,0.015); transition: border-color 0.25s ease, background-color 0.25s ease; }
+    .footer-006-col.is-open { border-color: rgba(228,221,203,0.22); background: rgba(228,221,203,0.035); }
+    .footer-006-col-h { display: none; }
+    .footer-006-tog { display: flex; width: 100%; height: 56px; padding: 0 20px; align-items: center; justify-content: space-between; background: none; border: 0; color: #E4DDCB; font-family: Neuemontreal, 'Neue Montreal', sans-serif; font-size: 16px; font-weight: 500; text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .footer-006-tog:focus-visible { outline: 2px solid #E4DDCB; outline-offset: -2px; border-radius: 16px; }
+    .footer-006-plus { position: relative; width: 12px; height: 12px; flex: none; }
+    .footer-006-plus::before, .footer-006-plus::after { content: ''; position: absolute; left: 0; top: 5.25px; width: 12px; height: 1.5px; background: currentColor; transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1); }
+    .footer-006-plus::after { transform: rotate(90deg); }
+    .footer-006-col.is-open .footer-006-plus::after { transform: rotate(0deg); }
+    .footer-006-col ul { display: none; align-items: stretch; gap: 0; padding: 0 20px 10px; }
+    .footer-006-col.is-open ul { display: flex; animation: footer-006-drop 0.32s cubic-bezier(0.2, 0.7, 0.2, 1); }
+    .footer-006-col li + li { border-top: 1px solid rgba(228,221,203,0.07); }
+    .footer-006-col a { display: flex; align-items: center; min-height: 44px; font-size: 15px; color: rgba(228,221,203,0.72); }
+    .footer-006-bottom { margin-top: 32px; }
+  }
+  @keyframes footer-006-drop { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) {
     .footer-006-froth .cf-bub { animation: none; }
+    .footer-006-col.is-open ul { animation: none; }
+    .footer-006-plus::before, .footer-006-plus::after { transition: none; }
   }
 </style>`
 
@@ -112,7 +135,7 @@ const SOCIALS = [
 ].join('\n      ')
 
 const COLS = GROUPS.map(([title, links]) =>
-  `<nav class="footer-006-col" aria-label="${title}"><h2 class="footer-006-col-h">${title}</h2><ul>${links
+  `<nav class="footer-006-col" aria-label="${title}"><h2 class="footer-006-col-h">${title}</h2><button type="button" class="footer-006-tog" aria-expanded="false">${title}<span class="footer-006-plus" aria-hidden="true"></span></button><ul>${links
     .map(([t, h]) => `<li><a href="${h}"${NT}>${t}</a></li>`)
     .join('')}</ul></nav>`,
 ).join('\n      ')
@@ -133,7 +156,8 @@ const MARKUP = `<footer class="footer-006">
       <p class="footer-006-copy">© 2026 Coastline Films Corp. • Powered by the Great Outdoors • All rights reserved</p>
     </div>
   </div>
-</footer>`
+</footer>
+<script>(function(){var cols=document.querySelectorAll('.footer-006-col');cols.forEach(function(c){var b=c.querySelector('.footer-006-tog');if(!b)return;b.addEventListener('click',function(){var open=!c.classList.contains('is-open');cols.forEach(function(o){o.classList.remove('is-open');var t=o.querySelector('.footer-006-tog');if(t)t.setAttribute('aria-expanded','false')});if(open){c.classList.add('is-open');b.setAttribute('aria-expanded','true')}})})})();</script>`
 
 const EMBED_START = '<footer class="footer"><div class="code-embed-7 w-embed w-script"><style>'
 
