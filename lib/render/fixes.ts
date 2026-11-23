@@ -40,8 +40,17 @@ const WEBFLOW_SCRIPTS = /<script\b[^>]*\bsrc="[^"]*(?:jquery-3\.5\.1\.min[^"]*|w
  */
 const IX3_PREHIDE = /<style>@media not all and \(prefers-reduced-motion: reduce\)\{html\.w-mod-js:not\(\.w-mod-ix3\)(?:(?!<\/style>)[\s\S])*<\/style>/g
 
+/** Any <img> of the site logo (Webflow CDN, blob copy, or a resized variant) is swapped for the vector logo. */
+const LOGO_IMG_SRC = /(<img\b[^>]*?)\ssrc="[^"]*(?:69fe6c7428307ab091c9a49f_Coastline(?:%20|%2520)Films(?:%20|%2520)copy\.png|coastline-films-logo-(?:v2|h\d+)-[A-Za-z0-9]+\.png)[^"]*"([^>]*>)/g
+function vectorLogo(html: string): string {
+  return html.replace(LOGO_IMG_SRC, (_m, pre: string, post: string) => {
+    const strip = (t: string) => t.replace(/\s(?:srcset|sizes)="[^"]*"/g, '')
+    return `${strip(pre)} src="/brand/coastline-films-logo.svg"${strip(post)}`
+  })
+}
+
 export function auditFixes(html: string): string {
-  let out = html.replace(WEBFLOW_SCRIPTS, '').replace(IX3_PREHIDE, '')
+  let out = vectorLogo(html.replace(WEBFLOW_SCRIPTS, '').replace(IX3_PREHIDE, ''))
   if (/class="[^"]*\bcf-vf\b/.test(out)) {
     const j = out.lastIndexOf('</body>')
     if (j !== -1) out = out.slice(0, j) + '<script defer src="/cf-vimeo.js"></script>' + out.slice(j)

@@ -9,7 +9,7 @@ import { applyNav } from './nav'
 import { applyHead } from './head'
 
 const NT = ' target="_blank" rel="noopener"'
-const LOGO = 'https://cdn.prod.website-files.com/69ecc5fb6fc18880aa9fc6c6/69fe6c7428307ab091c9a49f_Coastline%20Films%20copy.png'
+const LOGO = '/brand/coastline-films-logo.svg'
 
 const GROUPS: [string, [string, string][]][] = [
   ['Explore', [['Work', '/work'], ['About', '/about'], ['Field Notes', '/blog'], ['Contact', '/contact']]],

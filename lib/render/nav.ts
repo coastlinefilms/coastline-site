@@ -4,9 +4,9 @@
  * time so content/pages.json keeps the captured Webflow header untouched.
  */
 
-// Header logo pre-scaled to its display size (40px tall at 1x/2x/3x) so the browser never shrinks a big
-// file down to ~40px on the fly: Chrome's fast filtering on the pinned header ate the end of the E's top arm.
-const LOGO_IMG = `<img src="https://six9ethpn7gbia9t.public.blob.vercel-storage.com/site/brand/coastline-films-logo-h40-tc1dNg5hKCrsztGiO6ZyV5k28h7Gpm.png" srcset="https://six9ethpn7gbia9t.public.blob.vercel-storage.com/site/brand/coastline-films-logo-h40-tc1dNg5hKCrsztGiO6ZyV5k28h7Gpm.png 1x, https://six9ethpn7gbia9t.public.blob.vercel-storage.com/site/brand/coastline-films-logo-h80-FYtjsNUiM9N1DEKgbCIOCJzYIcdiYk.png 2x, https://six9ethpn7gbia9t.public.blob.vercel-storage.com/site/brand/coastline-films-logo-h120-ZWWvnnmB6IH4sFh5hRMHY52bcvq7jS.png 3x" width="134" height="40" alt="Coastline Films" decoding="async">`
+// The logo as a vector (traced from the 6000x1800 master PNG): sharp at every size and screen density,
+// and nothing for the browser to resample, so no soft edges and nothing clipped off the E.
+const LOGO_IMG = `<img src="/brand/coastline-films-logo.svg" width="200" height="60" alt="Coastline Films">`
 const TEXTURE = 'https://cdn.prod.website-files.com/69ecc5fb6fc18880aa9fc6c6/6a12480e77f832e5f99643e1_webtexture1.webp'
 
 const LINKS: [string, string][] = [
