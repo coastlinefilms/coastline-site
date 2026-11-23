@@ -56,6 +56,12 @@ export function phonePerf(html: string): string {
     },
   )
 
+  // 1b. Home hero still (self-hosted bear frame): preload the right size per screen so it paints first
+  if (out.includes('/hero/home-bear-1920.webp')) {
+    head += `<link rel="preload" as="image" type="image/webp" media="${PHONE}" imagesrcset="/hero/home-bear-mobile-720.webp 720w, /hero/home-bear-mobile-1080.webp 1080w" imagesizes="100vw" fetchpriority="high">`
+    head += `<link rel="preload" as="image" type="image/webp" media="(min-width:768px)" imagesrcset="/hero/home-bear-1280.webp 1280w, /hero/home-bear-1920.webp 1920w, /hero/home-bear-2560.webp 2560w" imagesizes="100vw" fetchpriority="high">`
+  }
+
   // 2a. Capabilities videos: hold the file back (desktop gets it straight away, phones when scrolled near)
   let capVideos = false
   out = out.replace(
