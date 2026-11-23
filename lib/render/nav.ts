@@ -30,7 +30,7 @@ const STYLE = `<style>
 .cf-nav__logo{grid-column:1;justify-self:start;display:block;height:40px;aspect-ratio:10/3;flex:none;transition:height .55s ${EASE}}
 .cf-nav.is-scrolled .cf-nav__logo{height:32px}
 /* width comes from the box's aspect ratio (the PNG is 6000x1800), not the image's own size: Safari sized the box from the srcset and clipped the E */
-.cf-nav__logo img{height:100%;width:100%;max-width:none;object-fit:contain;display:block;transition:filter .4s ease}
+.cf-nav__logo img{height:100%;width:100%;max-width:none;object-fit:contain;display:block;border-radius:0;transition:filter .4s ease}
 
 .cf-nav__links{grid-column:2;display:flex;align-items:center;gap:44px;transition:gap .55s ${EASE}}
 .cf-nav.is-scrolled .cf-nav__links{gap:36px}
@@ -73,7 +73,7 @@ const STYLE = `<style>
   .cf-nav__mobile{position:fixed;inset:0;padding:40px 24px 48px;background-color:#121413;background-image:linear-gradient(rgba(18,20,19,.55),rgba(18,20,19,.55)),url("${TEXTURE}");background-size:cover;background-position:center;display:flex;flex-direction:column;align-items:center;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .4s ease,visibility 0s linear .4s;z-index:1001}
   .cf-nav__mobile.is-open{opacity:1;pointer-events:auto;visibility:visible;transition:opacity .4s ease}
   .cf-nav__mobile-close{position:absolute;top:24px;right:20px;width:44px;height:44px;background:none;border:0;color:#E4DDCB;font-size:34px;line-height:1;cursor:pointer}
-  .cf-nav__mobile-logo img{height:44px;width:auto;display:block}
+  .cf-nav__mobile-logo img{height:44px;width:auto;display:block;border-radius:0}
   .cf-nav__mobile-menu{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px}
   .cf-nav__mobile-menu a{color:#E4DDCB;font-size:32px;font-weight:400;line-height:1.2;text-decoration:none;transition:color .3s ease}
   .cf-nav__mobile-menu a:hover{color:#FFFFFF}

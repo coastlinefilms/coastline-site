@@ -22,6 +22,8 @@ const CSS = `<style id="cf-audit-fixes">
 .cf-vf__play:focus-visible{outline:2px solid #E4DDCB;outline-offset:-6px}
 .cf-vf:hover .cf-vf__poster{transform:scale(1.02)}
 .why-video.cf-vf .cf-vf__poster{object-fit:contain}
+/* logo images: square corners. Webflow's global img{border-radius:12px} rounded the logo's top-right corner and sliced the E */
+.cf-nav__logo img,.cf-nav__mobile-logo img,.footer-006-logo,img[src*="coastline-films-wordmark"],img[src*="Coastline%20Films%20copy"]{border-radius:0!important}
 @media (max-width:767px){
   .cf-vf__play span{width:64px;height:64px;background-size:26px}
   .cf-nav__cta{min-height:44px}

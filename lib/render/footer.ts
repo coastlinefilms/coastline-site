@@ -23,7 +23,7 @@ const STYLE = `<style>
   .footer-006 * { box-sizing: border-box; }
   .footer-006-inner { max-width: 1312px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
   .footer-006-logo-link { display: flex; align-items: center; justify-content: center; text-decoration: none; }
-  .footer-006-logo { height: 56px; width: auto; display: block; }
+  .footer-006-logo { height: 56px; width: auto; display: block; border-radius: 0; }
 
   /* socials */
   .footer-006-socials { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 16px 48px; margin-top: 28px; }
