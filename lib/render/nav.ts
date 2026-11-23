@@ -140,8 +140,7 @@ const MARKUP = `<nav class="cf-nav" id="cfNav" aria-label="Main">
     },{passive:true});
   }
 })();
-</script>
-<script defer src="/cf-logo-anim.js"></script>`
+</script>`
 
 const START = '<style>\n.cf-nav{'
 

@@ -44,8 +44,6 @@ const nextConfig: NextConfig = {
       { source: '/videos/:file*', headers: [{ key: 'Cache-Control', value: 'public, max-age=2592000' }] },
       // Shared site CSS: versioned name (v2 = without Webflow's .otf font faces), so it can be cached for good
       { source: '/wf/coastline-films.shared.v2.min.css', headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }] },
-      // Header logo reveal sprite (public/cf-logo-anim.js). Versioned name, so it can be cached for good
-      { source: '/logo-reveal-v1.webp', headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }] },
     ]
   },
   async redirects() {
