@@ -8,6 +8,7 @@ import { fillLists } from './lists'
 import { renderProject } from './project'
 import { renderPost } from './blog'
 import { vimeoPosters } from './vimeo'
+import { knockoutOutlines } from './knockout'
 import { addToHead, projectVideoJsonLd } from './video-schema'
 import { applySettings, getSettings, matchRedirect } from '@/lib/settings'
 
@@ -120,10 +121,10 @@ async function renderCore(path: string): Promise<Rendered> {
     if (staticHtml.includes('<!--CMS:')) {
       const [projects, posts] = await Promise.all([listProjects(), listPosts()])
       const html = track(rewriteAssets(applyFooter(fillLists(staticHtml, { projects, posts }))))
-      return { status: 200, html: pageExtras(html, p) }
+      return { status: 200, html: p === '/' ? await knockoutOutlines(pageExtras(html, p)) : pageExtras(html, p) }
     }
     const html = track(rewriteAssets(applyFooter(staticHtml)))
-    return { status: 200, html: pageExtras(html, p) }
+    return { status: 200, html: p === '/' ? await knockoutOutlines(pageExtras(html, p)) : pageExtras(html, p) }
   }
 
   const m = p.match(/^\/(projects|blog)\/([^/]+)$/)
