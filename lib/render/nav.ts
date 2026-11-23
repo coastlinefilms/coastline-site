@@ -77,7 +77,7 @@ const STYLE = `<style>
   .cf-nav__mobile-menu a:hover{color:#FFFFFF}
   .cf-nav__mobile-menu .cf-nav__mobile-cta{margin-top:16px;display:inline-flex;align-items:center;gap:10px;padding:16px 28px;border-radius:999px;background:#E4DDCB;color:#121413;font-size:17px;font-weight:500}
   .cf-nav__mobile-menu .cf-nav__mobile-cta:hover{background:#FFFFFF;color:#121413}
-  .cf-nav__mobile-menu .cf-nav__mobile-notes{display:inline-flex;align-items:center;gap:14px}
+  .cf-nav__mobile-menu .cf-nav__mobile-notes{display:inline-flex;align-items:center;gap:8px;font-size:16px}
   .cf-nav__notes-ico{flex:none;height:1.1em;width:calc(1.1em * 160 / 180);background-color:currentColor;-webkit-mask:url(/icons/field-notes.png) center/contain no-repeat;mask:url(/icons/field-notes.png) center/contain no-repeat}
 }
 @media(max-width:400px){

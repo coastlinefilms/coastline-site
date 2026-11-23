@@ -25,7 +25,7 @@ export function coverflowOrder(projects: Project[]) {
 }
 
 const STYLE = `<style>
-.cf-flow{padding:112px 64px;background:#121413;color:#E4DDCB;font-family:Neuemontreal,"Neue Montreal",-apple-system,sans-serif;overflow:hidden}
+.cf-flow{padding:112px 64px;background:transparent;color:#E4DDCB;font-family:Neuemontreal,"Neue Montreal",-apple-system,sans-serif;overflow:hidden}
 .cf-flow *{box-sizing:border-box}
 .cf-flow__head{max-width:1312px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-end;gap:32px}
 .cf-flow__h{margin:0;font-size:64px;line-height:1.05;font-weight:400;letter-spacing:-.02em;color:#E4DDCB}
