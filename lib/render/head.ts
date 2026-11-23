@@ -37,8 +37,8 @@ const FONT_URL: Record<string, string> = {
 const FONT_CSS = FAMILIES.flatMap((fam) =>
   FACES.map(
     ([file, w, s]) =>
-      // WOFF2 from app/fonts (one set of files behind all three family names); the .otf stays as a fallback
-      `@font-face{font-family:'${fam}';src:url(/fonts/NeueMontreal-${file}.woff2) format('woff2'),url(${FONT_URL[file]}) format('opentype');font-weight:${w};font-style:${s};font-display:swap}`,
+      // WOFF2 from app/fonts (converted from the .otf originals in FONT_URL): one set of files behind all three family names
+      `@font-face{font-family:'${fam}';src:url(/fonts/NeueMontreal-${file}.woff2) format('woff2');font-weight:${w};font-style:${s};font-display:swap}`,
   ),
 ).join('\n')
 
