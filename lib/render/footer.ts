@@ -77,7 +77,7 @@ const STYLE = `<style>
   /* fine print */
   .footer-006-bottom { width: 100%; margin-top: 48px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
   .footer-006-copy { margin: 0; font-family: Neuemontreal, 'Neue Montreal', sans-serif; font-size: 12px; line-height: 1.8; letter-spacing: 0.10em; text-transform: uppercase; color: rgba(228,221,203,0.5); }
-  .footer-006-copy a { color: rgba(228,221,203,0.45); text-decoration: none; transition: color 0.25s ease; }
+  .footer-006-copy a { color: rgba(228,221,203,0.34); text-decoration: none; transition: color 0.25s ease; }
   .footer-006-copy a:hover { color: #E4DDCB; }
   .footer-006-legal a + a { margin-left: 24px; }
 
@@ -128,8 +128,8 @@ const MARKUP = `<footer class="footer-006">
       ${COLS}
     </div>
     <div class="footer-006-bottom">
-      <p class="footer-006-copy">© 2026 Coastline Films Corp. • Powered by the Great Outdoors • All rights reserved</p>
       <p class="footer-006-copy footer-006-legal"><a href="/privacy"${NT}>Privacy</a><a href="/terms"${NT}>Terms</a><a href="/sms-opt-in"${NT}>SMS Opt-in</a></p>
+      <p class="footer-006-copy">© 2026 Coastline Films Corp. • Powered by the Great Outdoors • All rights reserved</p>
     </div>
   </div>
 </footer>`

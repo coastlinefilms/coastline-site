@@ -11,7 +11,6 @@ const CSS = `<style id="cf-audit-fixes">
 .why-stat-label,.cf-test-role,.lp-price__label,.ab-person__role,[class^="lp-"] small,.lp-stat small{color:rgba(228,221,203,.72)!important}
 .lp-proj__meta,.lp-logos span{color:#A29B90!important}
 .cf-land-ack__text{font-size:12px!important;color:#9A948A!important}
-.footer-006-copy a{color:rgba(228,221,203,.62)!important}
 .cf-flow__dot{position:relative}
 .cf-flow__dot::after{content:"";position:absolute;left:-6px;right:-6px;top:-18px;bottom:-18px}
 .cf-vf{overflow:hidden;border-radius:inherit}
